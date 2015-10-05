@@ -1,0 +1,68 @@
+package au.edu.unsw.soacourse.ors.model;
+
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
+@XmlRootElement(name = "application")
+@XmlType(propOrder = { "_appId", "_jobId", "personalDetails", "cv", "resume", "status" })
+public class Application {
+
+    private String _appId;
+    private String _jobId;
+    private String personalDetails;
+    private String cv;
+    private String resume;
+    private ApplicationStatus status;
+    
+	public Application() {
+		
+	}
+
+	public String get_appId() {
+		return _appId;
+	}
+
+	public void set_appId(String _appId) {
+		this._appId = _appId;
+	}
+
+	public String get_jobId() {
+		return _jobId;
+	}
+
+	public void set_jobId(String _jobId) {
+		this._jobId = _jobId;
+	}
+
+	public String getPersonalDetails() {
+		return personalDetails;
+	}
+
+	public void setPersonalDetails(String personalDetails) {
+		this.personalDetails = personalDetails;
+	}
+
+	public String getCv() {
+		return cv;
+	}
+
+	public void setCv(String cv) {
+		this.cv = cv;
+	}
+
+	public String getResume() {
+		return resume;
+	}
+
+	public void setResume(String resume) {
+		this.resume = resume;
+	}
+
+	public ApplicationStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(ApplicationStatus status) {
+		this.status = status;
+	}
+}
