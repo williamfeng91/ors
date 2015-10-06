@@ -145,8 +145,7 @@ public class JobController {
 		String status = request.getParameter("status");
 		String assignedTeam = request.getParameter("assignedTeam");
 
-		Job updatedJob = new Job();
-		updatedJob.set_jobId(id);
+		Job updatedJob = JobsDao.instance.getById(id);
 		updatedJob.setClosingDate(closingDate);
 		updatedJob.setSalary(Integer.parseInt(salary));
 		updatedJob.setPositionType(positionType);

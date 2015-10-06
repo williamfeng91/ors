@@ -19,18 +19,18 @@
       <section class="col-xs-12 col-sm-6 col-md-12">
         <div class="search-result row">
               <div class="col-xs-12 col-sm-12 col-md-3">
-                <a href="<c:url value="applications/${application._appId}" />" class="thumbnail"><img src="<c:url value="/resources/images/no-img.jpg" />" alt="${application._appId}" /></a>
+                <a href="<c:url value="/applications/${application._appId}" />" class="thumbnail"><img src="<c:url value="/resources/images/no-img.jpg" />" alt="${application._appId}" /></a>
               </div>
               <div class="col-xs-12 col-sm-12 col-md-2">
                 <ul class="meta-search">
-                  <li><a href="<c:url value="applications/${application._appId}" />"><span>View application details</span></a></li>
+                  <li><a href="<c:url value="/applications/${application._appId}" />"><span>View application details</span></a></li>
                   <c:if test="${not empty job}">
-                    <li><a href="<c:url value="jobs/${job._jobId}" />"><span>View job posting</span></a></li>
+                    <li><a href="<c:url value="/jobs/${job._jobId}" />"><span>View job posting</span></a></li>
                   </c:if>
                 </ul>
               </div>
               <div class="col-xs-12 col-sm-12 col-md-7 excerpet">
-                <h3><a href="<c:url value="applications/${application._appId}" />" title="">${application._appId}</a></h3>
+                <h3><a href="<c:url value="/applications/${application._appId}" />" title="">${application._appId}</a></h3>
                 <c:if test="${not empty job}">
                   <p>Job: ${job.positionType}</p>
                 </c:if>

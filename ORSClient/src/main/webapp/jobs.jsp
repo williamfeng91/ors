@@ -19,22 +19,22 @@
       <section class="col-xs-12 col-sm-6 col-md-12">
         <div class="search-result row">
               <div class="col-xs-12 col-sm-12 col-md-3">
-                <a href="<c:url value="jobs/${job._jobId}" />" class="thumbnail"><img src="<c:url value="/resources/images/no-img.jpg" />" alt="${job.location}-${job.positionType}" /></a>
+                <a href="<c:url value="/jobs/${job._jobId}" />" class="thumbnail"><img src="<c:url value="/resources/images/no-img.jpg" />" alt="${job.location}-${job.positionType}" /></a>
               </div>
               <div class="col-xs-12 col-sm-12 col-md-2">
                 <ul class="meta-search">
-                  <li><a href="<c:url value="jobs/${job._jobId}" />"><span>View job details</span></a></li>
+                  <li><a href="<c:url value="/jobs/${job._jobId}" />"><span>View job details</span></a></li>
                   <c:if test="${not empty user}">
-                    <li><a href="<c:url value="jobs/${job._jobId}/applications" />"><span>View applications</span></a></li>
+                    <li><a href="<c:url value="/jobs/${job._jobId}/applications" />"><span>View applications</span></a></li>
                   </c:if>
                   <c:if test="${not empty user && user.role == 'manager'}">
-                    <li><a href="<c:url value="jobs/${job._jobId}/edit" />"><span>Edit</span></a></li>
-                    <li><a href="<c:url value="jobs/${job._jobId}/delete" />"><span>Delete</span></a></li>
+                    <li><a href="<c:url value="/jobs/${job._jobId}/edit" />"><span>Edit</span></a></li>
+                    <li><a href="<c:url value="/jobs/${job._jobId}/delete" />"><span>Delete</span></a></li>
                   </c:if>
                 </ul>
               </div>
               <div class="col-xs-12 col-sm-12 col-md-7 excerpet">
-                <h3><a href="<c:url value="jobs/${job._jobId}" />" title="">${job.positionType}</a></h3>
+                <h3><a href="<c:url value="/jobs/${job._jobId}" />" title="">${job.positionType}</a></h3>
                 <p>Location: ${job.location}</p>
                 <p>Salary: <fmt:formatNumber value="${job.salary}" type="currency"/></p>
                 <p>Closing date: ${job.closingDate}</p>

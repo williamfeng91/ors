@@ -4,7 +4,7 @@
   <div class="container">
     
     <hgroup class="mb20">
-      <center><h1>Apply for Job</h1></center>
+      <center><h1>Update Application</h1></center>
       <c:choose>
         <c:when test="${not empty errorMsg}" >
           <h2 class="lead error-msg">${errorMsg}</h2>
@@ -18,7 +18,7 @@
       </c:choose>
     </hgroup>
 
-    <form action="<c:url value="/applications" />" method="post">
+    <form action="<c:url value="/applications/${application._appId}/update" />" method="post">
       <div class="row">
         <div class="form-group col-xs-12 col-sm-12 col-md-8">
           <label for="job">Job</label>
@@ -46,7 +46,7 @@
       </div>
       <div class="row">
         <button type="submit" class="btn btn-default">Submit</button>
-        <a href="<c:url value="/jobs/${job._jobId}" />"><button type="button" class="btn btn-default">Cancel</button></a>
+        <a href="<c:url value="/applications/${application._appId}" />"><button type="button" class="btn btn-default">Cancel</button></a>
       </div>
     </form>
   </div>

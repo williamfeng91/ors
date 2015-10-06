@@ -55,7 +55,10 @@
           <textarea class="form-control" rows="10" name="description" maxLength="1000" required>${job.description}</textarea>
         </div>
       </div>
-      <button type="submit" class="btn btn-default">Submit</button>
+      <div class="row">
+        <button type="submit" class="btn btn-default">Submit</button>
+        <a href="<c:url value="/jobs" />"><button type="button" class="btn btn-default">Cancel</button></a>
+      </div>
     </form>
   </div>
 <%@ include file="footer.html" %>

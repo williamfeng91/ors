@@ -4,7 +4,7 @@
   <div class="container">
     
     <hgroup class="mb20">
-      <center><h1>Job Details</h1></center>
+      <center><h1>Application Details</h1></center>
       <c:choose>
         <c:when test="${not empty errorMsg}" >
           <h2 class="lead error-msg">${errorMsg}</h2>
@@ -12,43 +12,38 @@
         <c:when test="${not empty successMsg}" >
           <h2 class="lead success-msg">${successMsg}</h2>
         </c:when>
+        <c:otherwise>
+          <h2 class="lead error-msg">Please bookmark this page.</h2>
+        </c:otherwise>
       </c:choose>
     </hgroup>
     
     <table class="table table-striped">
       <tr>
-        <td width="25%">Position Type</td>
+        <td width="25%">Job</td>
         <td><c:out value="${job.positionType}"/></td>
       </tr>
       <tr>
-        <td>Location</td>
-        <td><c:out value="${job.location}"/></td>
+        <td>Status</td>
+        <td><c:out value="${application.status}"/></td>
       </tr>
       <tr>
-        <td>Salary</td>
-        <td><fmt:formatNumber value="${job.salary}" type="currency"/></td>
+        <td>Personal Details</td>
+        <td><c:out value="${application.personalDetails}"/></td>
       </tr>
       <tr>
-        <td>Closing Date</td>
-        <td><c:out value="${job.closingDate}"/></td>
+        <td>CV</td>
+        <td><c:out value="${application.cv}"/></td>
       </tr>
       <tr>
-        <td>Description</td>
-        <td><c:out value="${job.description}"/></td>
+        <td>Resume</td>
+        <td><c:out value="${application.resume}"/></td>
       </tr>
-      <c:if test="${not empty user}">
-        <tr>
-          <td>Status</td>
-          <td><c:out value="${job.status}"/></td>
-        </tr>
-        <tr>
-          <td>Assigned Team</td>
-          <td><c:out value="${job.assignedTeam}"/></td>
-        </tr>
-      </c:if>
     </table>
     <div class="row">
-      <a href="<c:url value="/jobs/${job._jobId}/apply" />"><button class="btn btn-default">Apply</button></a>
+      <c:if test="${application.status eq 'CREATED'}">
+        <a href="<c:url value="/applications/${application._appId}/edit" />"><button class="btn btn-default">Edit</button></a>
+      </c:if>
     </div>
   </div>
   <%@ include file="footer.html" %>

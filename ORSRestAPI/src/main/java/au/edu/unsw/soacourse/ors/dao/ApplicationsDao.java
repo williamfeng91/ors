@@ -114,7 +114,6 @@ public enum ApplicationsDao {
 			for (int i = 0; i < list.size(); ++i) {
 				Application item = list.get(i);
 				if (item.get_appId().equals(updatedApplication.get_appId())) {
-					item = updatedApplication;
 					list.set(i, updatedApplication);
 					
 					// write to database

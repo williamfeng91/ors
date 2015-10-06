@@ -109,7 +109,9 @@ public class ApplicationController {
 	public String visitApplicationPage(@PathVariable String id, ModelMap model) {
 		try {
 			Application a = ApplicationsDao.instance.getById(id);
+			Job j = JobsDao.instance.getById(a.get_jobId());
 			model.addAttribute("application", a);
+			model.addAttribute("job", j);
 			return "applicationDetails";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -122,7 +124,9 @@ public class ApplicationController {
 	public String visitEditApplicationPage(@PathVariable String id, ModelMap model) {
 		try {
 			Application a = ApplicationsDao.instance.getById(id);
+			Job j = JobsDao.instance.getById(a.get_jobId());
 			model.addAttribute("application", a);
+			model.addAttribute("job", j);
 			return "editApplication";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -138,7 +142,7 @@ public class ApplicationController {
 		String cv = request.getParameter("cv");
 		String resume = request.getParameter("resume");
 
-		Application updatedApplication = new Application();
+		Application updatedApplication = ApplicationsDao.instance.getById(id);
 		updatedApplication.set_jobId(_jobId);
 		updatedApplication.setPersonalDetails(personalDetails);
 		updatedApplication.setCv(cv);
@@ -146,7 +150,7 @@ public class ApplicationController {
 		if (!validateInput(_jobId, personalDetails, cv, resume)) {
 			model.addAttribute("errorMsg", "Invalid form data");
 			model.addAttribute("application", updatedApplication);
-			return "addApplication";
+			return "editApplication";
 		}
 		try {
 			ApplicationsDao.instance.update(updatedApplication);
@@ -162,7 +166,7 @@ public class ApplicationController {
 	public String deleteApplication(@PathVariable String id, ModelMap model) {
 		try {
 			ApplicationsDao.instance.delete(id);
-			return "redirect:/applications";
+			return "redirect:/jobs";
 		} catch (Exception e) {
 			e.printStackTrace();
 			model.addAttribute("errorMsg", e.getMessage());

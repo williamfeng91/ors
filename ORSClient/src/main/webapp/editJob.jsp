@@ -4,7 +4,7 @@
   <div class="container">
     
     <hgroup class="mb20">
-      <center><h1>Post New Job</h1></center>
+      <center><h1>Update Job</h1></center>
       <c:choose>
         <c:when test="${not empty errorMsg}" >
           <h2 class="lead error-msg">${errorMsg}</h2>
@@ -75,7 +75,10 @@
           </select>
         </div>
       </div>
-      <button type="submit" class="btn btn-default">Submit</button>
+      <div class="row">
+        <button type="submit" class="btn btn-default">Submit</button>
+        <a href="<c:url value="/jobs/${job._jobId}" />"><button type="button" class="btn btn-default">Cancel</button></a>
+      </div>
     </form>
   </div>
 <%@ include file="footer.html" %>

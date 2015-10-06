@@ -130,7 +130,6 @@ public enum JobsDao {
 			for (int i = 0; i < list.size(); ++i) {
 				Job item = list.get(i);
 				if (item.get_jobId().equals(updatedJob.get_jobId())) {
-					item = updatedJob;
 					list.set(i, updatedJob);
 
 					// write to database

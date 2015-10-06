@@ -28,13 +28,16 @@
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Browse<span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu">
             <li><a href="<c:url value="/jobs" />">Job Postings</a></li>
+            <c:if test="${not empty user && user.role eq 'manager'}">
+              <li><a href="<c:url value="/applications" />">Applications</a></li>
+            </c:if>
           </ul>
         </li>
       <c:choose>
         <c:when test="${not empty user}">
-            <c:if test="${user.role == 'manager'}">
+            <c:if test="${user.role eq 'manager'}">
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">New<span class="caret"></span></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Create<span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">
                   <li><a href="<c:url value="/jobs/new" />">Job Posting</a></li>
                 </ul>

@@ -67,7 +67,6 @@ public class ApplicationsResource {
 
 	// Return a list of all applications
 	@GET
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 	public Response getApplications() {
 		List<Application> list = ApplicationsDao.instance.getAll();
@@ -105,26 +104,10 @@ public class ApplicationsResource {
 	// Update the application with specified id
 	@PUT
 	@Path("{id}")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	public Response putApplication(
-			@PathParam("id") String id,
-			@FormParam("_jobId") String _jobId,
-			@FormParam("personalDetails") String personalDetails,
-			@FormParam("cv") String cv,
-			@FormParam("resume") String resume,
-			@FormParam("status") String status
-	) {
-		if (!validateInput(_jobId, personalDetails, cv, resume, status)) {
-			throw new BadRequestException("Invalid form parameters");
-		}
-		Application a = new Application();
-		a.set_appId(id);
-		a.set_jobId(_jobId);
-		a.setPersonalDetails(personalDetails);
-		a.setCv(cv);
-		a.setResume(resume);
-		a.setStatus(ApplicationStatus.valueOf(status));
-		ApplicationsDao.instance.update(a);
+	@Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+	public Response putApplication(@PathParam("id") String id, Application updatedApplication) {
+		updatedApplication.set_appId(id);
+		ApplicationsDao.instance.update(updatedApplication);
 		return Response.noContent().build();
 	}
 	
