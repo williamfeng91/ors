@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+
+	<!-- Import CXF configuration -->
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+
+	<context:component-scan base-package="au.edu.unsw.soacourse.ors"></context:component-scan>
+
+    <mvc:resources mapping="/resources/**" location="/resources/" />
+    <mvc:annotation-driven />
+
+	<!-- Spring MVC view resolver -->
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<!-- CXF JAX-WS Client bean definition. -->
+	<!-- <jaxws:client id="loanApprovalServiceProcess"
+		address="http://localhost:6060/ode/processes/LoanApprovalServiceProcess"
+		serviceClass="au.edu.unsw.soacourse.loanapproval.LoanApprovalServiceProcessPortType">
+	</jaxws:client> -->
+
+
+</beans>

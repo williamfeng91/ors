@@ -142,37 +142,18 @@ public class JobsResource {
 	// Update the job posting with specified id
 	@PUT
 	@Path("{id}")
-	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 	public Response putJob(
 			@HeaderParam("ORSKey") String orsKey,
 			@HeaderParam("ShortKey") String shortKey,
 			@PathParam("id") String id,
-			@FormParam("closingDate") String closingDate,
-			@FormParam("salary") String salary,
-			@FormParam("positionType") String positionType,
-			@FormParam("location") String location,
-			@FormParam("description") String description,
-			@FormParam("status") String status,
-			@FormParam("assignedTeam") String assignedTeam
+			Job updatedJob
 	) {
 		if (!Security.instance.isRightKey(orsKey) || !Security.instance.isManager(shortKey)) {
 			throw new ForbiddenException("User does not have permission");
 		}
-		if (!validateInput(closingDate, salary, positionType, location, description, status, assignedTeam)) {
-			throw new BadRequestException("Invalid form parameters");
-		}
-		Job p = new Job();
-		p.set_jobId(id);
-		p.setClosingDate(closingDate);
-		p.setSalary(Integer.parseInt(salary));
-		p.setPositionType(positionType);
-		p.setLocation(location);
-		p.setDescription(description);
-		p.setStatus(RecruitmentStatus.valueOf(status));
-		if (assignedTeam != null) {
-			p.setAssignedTeam(assignedTeam);
-		}
-		JobsDao.instance.update(p);
+		updatedJob.set_jobId(id);
+		JobsDao.instance.update(updatedJob);
 		return Response.noContent().build();
 	}
 	
