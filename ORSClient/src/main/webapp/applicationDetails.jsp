@@ -21,7 +21,7 @@
     <table class="table table-striped">
       <tr>
         <td width="25%">Job</td>
-        <td><c:out value="${job.positionType}"/></td>
+        <td><a href="<c:url value="/jobs/${job._jobId}" />"><c:out value="${job.positionType}"/></a></td>
       </tr>
       <tr>
         <td>Status</td>
@@ -43,6 +43,9 @@
     <div class="row">
       <c:if test="${application.status eq 'CREATED'}">
         <a href="<c:url value="/applications/${application._appId}/edit" />"><button class="btn btn-default">Edit</button></a>
+      </c:if>
+      <c:if test="${application.status eq 'FINALISED'}">
+        <a href="<c:url value="/applications/${application._appId}/delete" />"><button class="btn btn-default">Archive</button></a>
       </c:if>
     </div>
   </div>

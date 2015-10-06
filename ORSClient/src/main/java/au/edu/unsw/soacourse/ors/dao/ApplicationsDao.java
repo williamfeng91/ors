@@ -28,7 +28,7 @@ public enum ApplicationsDao {
     }
 
     public Application create(
-    		String _applicationId,
+    		String _jobId,
     		String personalDetails,
     		String cv,
     		String resume,
@@ -36,7 +36,7 @@ public enum ApplicationsDao {
     	client = WebClient.create(REST_URI, providers);
     	Response r = client.path("/applications")
     		.accept(MediaType.APPLICATION_JSON)
-    		.form(new Form().param("_applicationId", _applicationId)
+    		.form(new Form().param("_jobId", _jobId)
     				.param("personalDetails", personalDetails)
     				.param("cv", cv)
     				.param("resume", resume)
