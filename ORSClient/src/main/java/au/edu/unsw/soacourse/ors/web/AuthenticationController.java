@@ -1,7 +1,10 @@
 package au.edu.unsw.soacourse.ors.web;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +17,15 @@ public class AuthenticationController {
 
 //	@Autowired
 //	private LoanApprovalServiceProcessPortType loanApproval;
+	UsersDao usersDao;
+	
+	@Autowired
+	ServletContext context;
+	
+	@PostConstruct
+	public void setUpUserDB() {
+		usersDao = new UsersDao(context);
+	}
     
 	@RequestMapping("/login")
 	public String visitLoginPage(ModelMap model) {
@@ -30,7 +42,7 @@ public class AuthenticationController {
 			return "login";
 		}
 		try {
-			User user = UsersDao.instance.login(request.getServletContext(), username, password);
+			User user = usersDao.login(username, password);
 			if (user == null) {
 				model.addAttribute("errorMsg", "Login failed");
 				return "login";

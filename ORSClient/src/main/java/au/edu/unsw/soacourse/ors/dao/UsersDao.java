@@ -21,17 +21,19 @@ import au.edu.unsw.soacourse.ors.beans.User;
 import au.edu.unsw.soacourse.ors.beans.UserList;
 
 
-public enum UsersDao {
-    instance;
+public class UsersDao {
 
 	private static final String DATASOURCE = "/WEB-INF/RegisteredUsers.xml";
     private static final String REST_URI = "http://localhost:8080/ORSRestAPI";
     private String dataLocation;
     private WebClient client;
     private List<Object> providers;
-    JAXBContext jaxbContext;
+    private ServletContext servletContext;
+    private JAXBContext jaxbContext;
 
-    private UsersDao() {
+    public UsersDao(ServletContext servletContext) {
+    	this.servletContext = servletContext;
+    	dataLocation = servletContext.getRealPath(DATASOURCE);
     	providers = new ArrayList<Object>();
         providers.add( new JacksonJaxbJsonProvider() );
         try {
@@ -41,8 +43,7 @@ public enum UsersDao {
 		}
     }
     
-    public User login(ServletContext servletContext, String username, String password) {
-    	dataLocation = servletContext.getRealPath(DATASOURCE);
+    public User login(String username, String password) {
     	List<User> list = getAll();
     	for (User item : list) {
     		if (item.get_uid().equals(username) && item.get_pwd().equals(password)) {

@@ -69,8 +69,23 @@
         <div class="form-group col-xs-12 col-sm-12 col-md-4">
           <label for="assignedTeam">Assigned Team</label>
           <select name="assignedTeam">
+            <c:choose>
+              <c:when test="${empty job.assignedTeam}">
+                <option value="" selected="selected"></option>
+              </c:when>
+              <c:otherwise>
+                <option value=""></option>
+              </c:otherwise>
+            </c:choose>
             <c:forEach var="team" items="${teams}">
-              <option value="${team}">${team}</option>
+              <c:choose>
+                <c:when test="${team eq job.assignedTeam}">
+                  <option value="${team}" selected="selected">${team}</option>
+                </c:when>
+                <c:otherwise>
+                  <option value="${team}">${team}</option>
+                </c:otherwise>
+              </c:choose>
             </c:forEach>
           </select>
         </div>

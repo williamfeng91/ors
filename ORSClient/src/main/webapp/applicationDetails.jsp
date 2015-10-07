@@ -13,7 +13,10 @@
           <h2 class="lead success-msg">${successMsg}</h2>
         </c:when>
         <c:otherwise>
-          <h2 class="lead error-msg">Please bookmark this page.</h2>
+          <h2 class="lead error-msg"><p>Please bookmark this page or note down the following link:<br/>
+            <a>http://localhost:8080/ORSClient/applications/${application._appId}</a></p>
+            <p>You can check the latest status of your application here.</p>
+          </h2>
         </c:otherwise>
       </c:choose>
     </hgroup>

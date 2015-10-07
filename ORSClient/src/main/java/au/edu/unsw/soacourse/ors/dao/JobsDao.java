@@ -73,48 +73,56 @@ public enum JobsDao {
     
     // For external users to see all open jobs
     public List<Job> getOpenJobs() {
-    	return search(null, null, null, null, null, null, null, RecruitmentStatus.CREATED.toString(), null);
+    	return search(null, null, null, null, null, null, null, null, null, RecruitmentStatus.CREATED.toString(), null);
     }
     
     // For reviewers to see jobs assigned to them
     public List<Job> getAssignedJobs(String orsKey, String shortKey, String team) {
-    	return search(orsKey, shortKey, null, null, null, null, null, null, team);
+    	return search(orsKey, shortKey, null, null, null, null, null, null, null, null, team);
     }
 
     public List<Job> search(
     		String orsKey,
     		String shortKey,
-    		String closingDate,
-    		String salary,
-    		String positionType,
-    		String location,
-    		String description,
-    		String status,
-            String assignedTeam) {
+			String closingDateFrom,
+			String closingDateTo,
+			String salaryFrom,
+			String salaryTo,
+			String positionType,
+			String location,
+			String description,
+			String status,
+			String assignedTeam) {
     	client = WebClient.create(REST_URI, providers);
     	client.path("/jobs")
     		.accept(MediaType.APPLICATION_JSON)
     		.header(ORSKEY, orsKey)
     		.header(SHORTKEY, shortKey);
-    	if (closingDate != null) {
-    		client.query("closingDate", closingDate);
+    	if (closingDateFrom != null && !closingDateFrom.isEmpty()) {
+    		client.query("closingDateFrom", closingDateFrom);
     	}
-    	if (salary != null) {
-    		client.query("salary", salary);
+    	if (closingDateTo != null && !closingDateTo.isEmpty()) {
+    		client.query("closingDateTo", closingDateTo);
     	}
-    	if (positionType != null) {
+    	if (salaryFrom != null && !salaryFrom.isEmpty()) {
+    		client.query("salaryFrom", salaryFrom);
+    	}
+    	if (salaryTo != null && !salaryTo.isEmpty()) {
+    		client.query("salaryTo", salaryTo);
+    	}
+    	if (positionType != null && !positionType.isEmpty()) {
     		client.query("positionType", positionType);
     	}
-    	if (location != null) {
+    	if (location != null && !location.isEmpty()) {
     		client.query("location", location);
     	}
-    	if (description != null) {
+    	if (description != null && !description.isEmpty()) {
     		client.query("description", description);
     	}
-    	if (status != null) {
+    	if (status != null && !status.isEmpty()) {
     		client.query("status", status);
     	}
-    	if (assignedTeam != null) {
+    	if (assignedTeam != null && !assignedTeam.isEmpty()) {
     		client.query("assignedTeam", assignedTeam);
     	}
 		List<Job> list = (List<Job>) client.getCollection(Job.class);

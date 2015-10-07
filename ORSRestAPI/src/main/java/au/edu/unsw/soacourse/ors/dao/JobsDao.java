@@ -98,22 +98,26 @@ public enum JobsDao {
     }
 
     public List<Job> search(
-    		String closingDate,
-    		String salary,
-    		String positionType,
-    		String location,
-    		String description,
-    		String status,
-            String assignedTeam)
+			String closingDateFrom,
+			String closingDateTo,
+			int salaryFrom,
+			int salaryTo,
+			String positionType,
+			String location,
+			String description,
+			String status,
+			String assignedTeam)
     		throws BadRequestException {
     	List<Job> result = new ArrayList<Job>();
     	List<Job> list = getAll();
 		for (Job item : list) {
-			if ((closingDate == null || closingDate.equals(item.getClosingDate()))
-					&& (salary == null || salary.equals(""+item.getSalary()))
-					&& (positionType == null || positionType.equals(item.getPositionType()))
-					&& (location == null || location.equals(item.getLocation()))
-					&& (description == null || description.equals(item.getDescription()))
+			if ((closingDateFrom == null || closingDateFrom.compareTo(item.getClosingDate()) <= 0)
+					&& (closingDateTo == null || closingDateTo.compareTo(item.getClosingDate()) >= 0)
+					&& (salaryFrom <= item.getSalary())
+					&& (salaryTo >= item.getSalary())
+					&& (positionType == null || positionType.equalsIgnoreCase(item.getPositionType()))
+					&& (location == null || location.equalsIgnoreCase(item.getLocation()))
+					&& (description == null || item.getDescription().toLowerCase().contains(description.toLowerCase()))
 					&& (status == null || status.equals(item.getStatus().toString()))
                     && (assignedTeam == null || assignedTeam.equals(item.getAssignedTeam()))
 			) {

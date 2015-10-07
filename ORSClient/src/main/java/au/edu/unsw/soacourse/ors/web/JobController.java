@@ -5,8 +5,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,26 +27,14 @@ public class JobController {
 	
 	private static final String ORSKEY = "i-am-ors";
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-
-	@RequestMapping(value="/jobs", method={RequestMethod.GET})
-	public String visitJobListPage(HttpServletRequest request, ModelMap model) {
-		User user = (User) request.getSession().getAttribute("user");
-		try {
-			List<Job> list;
-			if (user != null && user.getRole().equals("manager")) {
-				list = JobsDao.instance.getAll(ORSKEY, user.getShortKey().toString());
-			} else if (user != null && user.getRole().equals("reviewer")) {
-				list = JobsDao.instance.getAssignedJobs(ORSKEY, user.getShortKey(), user.getDepartment());
-			} else {
-				list = JobsDao.instance.getOpenJobs();
-			}
-			model.addAttribute("jobs", list);
-		} catch (Exception e) {
-			e.printStackTrace();
-			model.addAttribute("errorMsg", e.getMessage());
-			return "error";
-		}
-		return "jobs";
+	UsersDao usersDao;
+	
+	@Autowired
+	ServletContext context;
+	
+	@PostConstruct
+	public void setUpUserDB() {
+		usersDao = new UsersDao(context);
 	}
 	
 	@RequestMapping("/jobs/new")
@@ -96,6 +88,27 @@ public class JobController {
 			return "error";
 		}
 	}
+
+	@RequestMapping(value="/jobs", method={RequestMethod.GET})
+	public String visitJobListPage(HttpServletRequest request, ModelMap model) {
+		User user = (User) request.getSession().getAttribute("user");
+		try {
+			List<Job> list;
+			if (user != null && user.getRole().equals("manager")) {
+				list = JobsDao.instance.getAll(ORSKEY, user.getShortKey().toString());
+			} else if (user != null && user.getRole().equals("reviewer")) {
+				list = JobsDao.instance.getAssignedJobs(ORSKEY, user.getShortKey(), user.getDepartment());
+			} else {
+				list = JobsDao.instance.getOpenJobs();
+			}
+			model.addAttribute("jobs", list);
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMsg", e.getMessage());
+			return "error";
+		}
+		return "jobs";
+	}
 	
 	@RequestMapping(value="/jobs/{id}")
 	public String visitJobPage(@PathVariable String id, ModelMap model) {
@@ -103,6 +116,77 @@ public class JobController {
 			Job j = JobsDao.instance.getById(id);
 			model.addAttribute("job", j);
 			return "jobDetails";
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMsg", e.getMessage());
+			return "error";
+		}
+	}
+	
+	@RequestMapping(value="/advSearchJob", method={RequestMethod.GET})
+	public String visitAdvSearchPage(ModelMap model) {
+		model.addAttribute("statuses", RecruitmentStatus.values());
+		model.addAttribute("teams", usersDao.getAllTeams());
+		return "advSearchJob";
+	}
+	
+	@RequestMapping(value="/advSearchJob", method={RequestMethod.POST})
+	public String doAdvSearch(HttpServletRequest request, ModelMap model) {
+		String closingDateFrom = request.getParameter("closingDateFrom");
+		String closingDateTo = request.getParameter("closingDateTo");
+		String salaryFrom = request.getParameter("salaryFrom");
+		String salaryTo = request.getParameter("salaryTo");
+		String positionType = request.getParameter("positionType");
+		String location = request.getParameter("location");
+		String description = request.getParameter("description");
+		String status = request.getParameter("status");
+		String assignedTeam = request.getParameter("assignedTeam");
+		
+		if (!validateSearchInput(
+				closingDateFrom,
+				closingDateTo,
+				salaryFrom,
+				salaryTo,
+				positionType,
+				location,
+				description,
+				status,
+				assignedTeam)) {
+			model.addAttribute("errorMsg", "Invalid form data");
+			return "advSearchJob";
+		}
+		try {
+			User user = (User) request.getSession().getAttribute("user");
+			List<Job> list;
+			if (user == null) {
+				list = JobsDao.instance.search(
+						null,
+						null,
+						closingDateFrom,
+						closingDateTo,
+						salaryFrom,
+						salaryTo,
+						positionType,
+						location,
+						description,
+						status,
+						assignedTeam);
+			} else {
+				list = JobsDao.instance.search(
+						ORSKEY,
+						user.getShortKey(),
+						closingDateFrom,
+						closingDateTo,
+						salaryFrom,
+						salaryTo,
+						positionType,
+						location,
+						description,
+						status,
+						assignedTeam);
+			}
+			model.addAttribute("jobs", list);
+			return "jobs";
 		} catch (Exception e) {
 			e.printStackTrace();
 			model.addAttribute("errorMsg", e.getMessage());
@@ -121,7 +205,7 @@ public class JobController {
 			Job j = JobsDao.instance.getById(id);
 			model.addAttribute("job", j);
 			model.addAttribute("statuses", RecruitmentStatus.values());
-			model.addAttribute("teams", UsersDao.instance.getAllTeams());
+			model.addAttribute("teams", usersDao.getAllTeams());
 			return "editJob";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -152,6 +236,9 @@ public class JobController {
 		updatedJob.setLocation(location);
 		updatedJob.setDescription(description);
 		updatedJob.setStatus(RecruitmentStatus.valueOf(status));
+		if (assignedTeam.isEmpty()) {
+			assignedTeam = null;
+		}
 		updatedJob.setAssignedTeam(assignedTeam);
 		if (!validateInput(closingDate, salary, positionType, location, description, status, assignedTeam)) {
 			model.addAttribute("errorMsg", "Invalid form data");
@@ -228,7 +315,65 @@ public class JobController {
 				return false;
 			}
     	}
-    	if (assignedTeam != null && !UsersDao.instance.getAllTeams().contains(assignedTeam)) {
+    	if (assignedTeam != null && !usersDao.getAllTeams().contains(assignedTeam)) {
+			return false;
+    	}
+    	return true;
+    }
+    
+    private boolean validateSearchInput(
+			String closingDateFrom,
+			String closingDateTo,
+			String salaryFrom,
+			String salaryTo,
+			String positionType,
+			String location,
+			String description,
+			String status,
+			String assignedTeam) {
+    	if (closingDateFrom != null && !closingDateFrom.isEmpty()) {
+        	try {
+    			Date d = DATE_FORMAT.parse(closingDateFrom);
+    	    	if (!DATE_FORMAT.format(d).equals(closingDateFrom)) {
+    	            return false;
+    	        }
+    		} catch (ParseException e) {
+    			return false;
+    		}
+    	}
+    	if (closingDateTo != null && !closingDateTo.isEmpty()) {
+        	try {
+    			Date d = DATE_FORMAT.parse(closingDateTo);
+    	    	if (!DATE_FORMAT.format(d).equals(closingDateTo)) {
+    	            return false;
+    	        }
+    		} catch (ParseException e) {
+    			return false;
+    		}
+    	}
+    	if (salaryFrom != null && !salaryFrom.isEmpty()) {
+        	try {
+    			Integer.parseInt(salaryFrom);
+    		} catch (NumberFormatException e) {
+    			return false;
+    		}
+    	}
+    	if (salaryTo != null && !salaryTo.isEmpty()) {
+        	try {
+    			Integer.parseInt(salaryTo);
+    		} catch (NumberFormatException e) {
+    			return false;
+    		}
+    	}
+    	if (status != null && !status.isEmpty()) {
+        	try {
+    			RecruitmentStatus.valueOf(status);
+    		} catch (Exception e) {
+    			return false;
+    		}
+    	}
+    	if (assignedTeam != null && !assignedTeam.isEmpty()
+    			&& !usersDao.getAllTeams().contains(assignedTeam)) {
 			return false;
     	}
     	return true;

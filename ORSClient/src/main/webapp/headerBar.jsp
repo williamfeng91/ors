@@ -13,15 +13,14 @@
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <form class="navbar-form navbar-left" role="search" action="control" method="post">
+      <form class="navbar-form navbar-left" role="search" action="" method="post">
         <div class="form-group">
           <input type="text" class="form-control" placeholder="keywords" name="searchStr">
         </div>
         <button type="submit" class="btn btn-default">Search</button>
-        <input type="hidden" name="action" value="search"/>
       </form>
       <div class="navbar-form navbar-left">
-        <a href="control?action=advSearchForm"><button type="button" class="btn btn-danger">Advanced Search</button></a>
+        <a href="<c:url value="/advSearchJob" />"><button type="button" class="btn btn-danger">Advanced Search</button></a>
       </div>
       <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">

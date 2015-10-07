@@ -48,7 +48,19 @@
       </c:if>
     </table>
     <div class="row">
-      <a href="<c:url value="/jobs/${job._jobId}/apply" />"><button class="btn btn-default">Apply</button></a>
+      <c:choose>
+        <c:when test="${not empty user && user.role eq 'manager'}">
+          <c:if test="${job.status eq 'CREATED'}">
+            <a href="<c:url value="/jobs/${job._jobId}/edit" />"><button class="btn btn-default">Edit</button></a>
+          </c:if>
+          <c:if test="${job.status eq 'CREATED' || job.status eq 'FINALISED'}">
+            <a href="<c:url value="/jobs/${job._jobId}/delete" />"><button class="btn btn-default">Delete</button></a>
+          </c:if>
+        </c:when>
+        <c:otherwise>
+          <a href="<c:url value="/jobs/${job._jobId}/apply" />"><button class="btn btn-default">Apply</button></a>
+        </c:otherwise>
+      </c:choose>
     </div>
   </div>
   <%@ include file="footer.html" %>

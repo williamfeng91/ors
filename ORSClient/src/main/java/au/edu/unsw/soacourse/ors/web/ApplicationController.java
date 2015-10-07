@@ -19,46 +19,6 @@ import au.edu.unsw.soacourse.ors.dao.JobsDao;
 public class ApplicationController {
 	
 	private static final String ORSKEY = "i-am-ors";
-
-	@RequestMapping(value="/applications", method={RequestMethod.GET})
-	public String visitApplicationListPage(HttpServletRequest request, ModelMap model) {
-		User user = (User) request.getSession().getAttribute("user");
-		if (user == null || !user.getRole().equals("manager")) {
-			model.addAttribute("errorMsg", "User has no permission");
-			return "login";
-		}
-		try {
-			List<Application> list;
-			list = ApplicationsDao.instance.getAll(ORSKEY, user.getShortKey().toString());
-			model.addAttribute("applications", list);
-			return "applications";
-		} catch (Exception e) {
-			e.printStackTrace();
-			model.addAttribute("errorMsg", e.getMessage());
-			return "error";
-		}
-	}
-
-	@RequestMapping(value="jobs/{jobId}/applications")
-	public String visitJobApplicationListPage(@PathVariable String jobId, HttpServletRequest request, ModelMap model) {
-		User user = (User) request.getSession().getAttribute("user");
-		if (user == null) {
-			model.addAttribute("errorMsg", "User has no permission");
-			return "login";
-		}
-		try {
-			List<Application> list;
-			list = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey().toString(), jobId);
-			Job j = JobsDao.instance.getById(jobId);
-			model.addAttribute("applications", list);
-			model.addAttribute("job", j);
-			return "applications";
-		} catch (Exception e) {
-			e.printStackTrace();
-			model.addAttribute("errorMsg", e.getMessage());
-			return "error";
-		}
-	}
 	
 	@RequestMapping("/jobs/{jobId}/apply")
 	public String visitNewApplicationPage(@PathVariable String jobId, ModelMap model) {
@@ -98,6 +58,46 @@ public class ApplicationController {
 					resume,
 					ApplicationStatus.CREATED.toString());
 			return "redirect:/applications/" + newApplication.get_appId();
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMsg", e.getMessage());
+			return "error";
+		}
+	}
+
+	@RequestMapping(value="/applications", method={RequestMethod.GET})
+	public String visitApplicationListPage(HttpServletRequest request, ModelMap model) {
+		User user = (User) request.getSession().getAttribute("user");
+		if (user == null || !user.getRole().equals("manager")) {
+			model.addAttribute("errorMsg", "User has no permission");
+			return "login";
+		}
+		try {
+			List<Application> list;
+			list = ApplicationsDao.instance.getAll(ORSKEY, user.getShortKey().toString());
+			model.addAttribute("applications", list);
+			return "applications";
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMsg", e.getMessage());
+			return "error";
+		}
+	}
+
+	@RequestMapping(value="jobs/{jobId}/applications")
+	public String visitJobApplicationListPage(@PathVariable String jobId, HttpServletRequest request, ModelMap model) {
+		User user = (User) request.getSession().getAttribute("user");
+		if (user == null) {
+			model.addAttribute("errorMsg", "User has no permission");
+			return "login";
+		}
+		try {
+			List<Application> list;
+			list = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey().toString(), jobId);
+			Job j = JobsDao.instance.getById(jobId);
+			model.addAttribute("applications", list);
+			model.addAttribute("job", j);
+			return "applications";
 		} catch (Exception e) {
 			e.printStackTrace();
 			model.addAttribute("errorMsg", e.getMessage());

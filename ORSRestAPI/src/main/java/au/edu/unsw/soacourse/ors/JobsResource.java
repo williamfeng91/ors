@@ -87,8 +87,10 @@ public class JobsResource {
 	public Response getJobs(
 			@HeaderParam("ORSKey") String orsKey,
 			@HeaderParam("ShortKey") String shortKey,
-			@QueryParam("closingDate") String closingDate,
-			@QueryParam("salary") String salary,
+			@QueryParam("closingDateFrom") String closingDateFrom,
+			@QueryParam("closingDateTo") String closingDateTo,
+			@QueryParam("salaryFrom") String salaryFrom,
+			@QueryParam("salaryTo") String salaryTo,
 			@QueryParam("positionType") String positionType,
 			@QueryParam("location") String location,
 			@QueryParam("description") String description,
@@ -100,7 +102,35 @@ public class JobsResource {
 			status = RecruitmentStatus.CREATED.toString();
 			assignedTeam = null;
 		}
-		List<Job> list = JobsDao.instance.search(closingDate, salary, positionType, location, description, status, assignedTeam);
+		if (!validateSearchInput(
+				closingDateFrom,
+				closingDateTo,
+				salaryFrom,
+				salaryTo,
+				positionType,
+				location,
+				description,
+				status,
+				assignedTeam)) {
+			throw new BadRequestException("Invalid form parameters");
+		}
+		int salaryFromNum = Integer.MIN_VALUE, salaryToNum = Integer.MAX_VALUE;
+		if (salaryFrom != null) {
+			salaryFromNum = Integer.parseInt(salaryFrom);
+		}
+		if (salaryTo != null) {
+			salaryToNum = Integer.parseInt(salaryTo);
+		}
+		List<Job> list = JobsDao.instance.search(
+				closingDateFrom,
+				closingDateTo,
+				salaryFromNum,
+				salaryToNum,
+				positionType,
+				location,
+				description,
+				status,
+				assignedTeam);
 		if (list == null) {
 			throw new NotFoundException("Job posting list not found");
 		} else {
@@ -216,6 +246,63 @@ public class JobsResource {
 		} catch (Exception e) {
 			return false;
 		}
+    	if (assignedTeam != null && UsersDao.instance.getByHireTeam(assignedTeam).size() <= 0) {
+			return false;
+    	}
+    	return true;
+    }
+    
+    private boolean validateSearchInput(
+			String closingDateFrom,
+			String closingDateTo,
+			String salaryFrom,
+			String salaryTo,
+			String positionType,
+			String location,
+			String description,
+			String status,
+			String assignedTeam) {
+    	if (closingDateFrom != null) {
+        	try {
+    			Date d = dateFormat.parse(closingDateFrom);
+    	    	if (!dateFormat.format(d).equals(closingDateFrom)) {
+    	            return false;
+    	        }
+    		} catch (ParseException e) {
+    			return false;
+    		}
+    	}
+    	if (closingDateTo != null) {
+        	try {
+    			Date d = dateFormat.parse(closingDateTo);
+    	    	if (!dateFormat.format(d).equals(closingDateTo)) {
+    	            return false;
+    	        }
+    		} catch (ParseException e) {
+    			return false;
+    		}
+    	}
+    	if (salaryFrom != null) {
+        	try {
+    			Integer.parseInt(salaryFrom);
+    		} catch (NumberFormatException e) {
+    			return false;
+    		}
+    	}
+    	if (salaryTo != null) {
+        	try {
+    			Integer.parseInt(salaryTo);
+    		} catch (NumberFormatException e) {
+    			return false;
+    		}
+    	}
+    	if (status != null) {
+        	try {
+    			RecruitmentStatus.valueOf(status);
+    		} catch (Exception e) {
+    			return false;
+    		}
+    	}
     	if (assignedTeam != null && UsersDao.instance.getByHireTeam(assignedTeam).size() <= 0) {
 			return false;
     	}
