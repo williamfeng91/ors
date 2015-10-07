@@ -1,4 +1,4 @@
-package au.edu.unsw.soacourse.ors.model;
+package au.edu.unsw.soacourse.ors.common;
 
 public enum ReviewDecision {
 	SHORTLIST, REJECT

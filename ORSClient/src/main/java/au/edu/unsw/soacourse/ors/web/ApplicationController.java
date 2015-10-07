@@ -1,5 +1,6 @@
 package au.edu.unsw.soacourse.ors.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import au.edu.unsw.soacourse.ors.beans.*;
 import au.edu.unsw.soacourse.ors.common.ApplicationStatus;
 import au.edu.unsw.soacourse.ors.dao.ApplicationsDao;
 import au.edu.unsw.soacourse.ors.dao.JobsDao;
+import au.edu.unsw.soacourse.ors.dao.ReviewsDao;
 
 @Controller
 public class ApplicationController {
@@ -94,6 +96,18 @@ public class ApplicationController {
 		try {
 			List<Application> list;
 			list = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey().toString(), jobId);
+			if (user.getRole().equals("reviewer")) {
+				// split into two lists: the ones the current user has reviewed and those haven't been reviewed
+				List<Application> reviewedApplications = new ArrayList<Application>();
+				for (Application a: list) {
+					if (ReviewsDao.instance.hasBeenReviewedBy(ORSKEY, user.getShortKey(), a.get_appId(), user.get_uid())) {
+						// current user is the author of the review
+						reviewedApplications.add(a);
+					}
+				}
+				list.removeAll(reviewedApplications);
+				model.addAttribute("reviewedApplications", reviewedApplications);
+			}
 			Job j = JobsDao.instance.getById(jobId);
 			model.addAttribute("applications", list);
 			model.addAttribute("job", j);
