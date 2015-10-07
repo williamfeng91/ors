@@ -46,7 +46,8 @@
       <div class="row">
         <div class="form-group col-xs-12 col-sm-12 col-md-4">
           <label for="closingDate">Closing Date</label>
-          <input type="date" class="form-control" name="closingDate" value="${job.closingDate}" required>
+          <input type="date" class="form-control" name="closingDate" value="${job.closingDate}" required 
+          <c:if test="${job.closingDate lt today}">readonly</c:if> />
         </div>
       </div>
       <div class="row">
@@ -55,41 +56,36 @@
           <textarea class="form-control" rows="10" name="description" maxLength="1000" required>${job.description}</textarea>
         </div>
       </div>
-      <div class="row">
-        <div class="form-group col-xs-12 col-sm-12 col-md-4">
-          <label for="status">Status</label>
-          <select name="status">
-            <c:forEach var="status" items="${statuses}">
-              <option value="${status}">${status}</option>
-            </c:forEach>
-          </select>
-        </div>
-      </div>
-      <div class="row">
-        <div class="form-group col-xs-12 col-sm-12 col-md-4">
-          <label for="assignedTeam">Assigned Team</label>
-          <select name="assignedTeam">
-            <c:choose>
-              <c:when test="${empty job.assignedTeam}">
-                <option value="" selected="selected"></option>
-              </c:when>
-              <c:otherwise>
-                <option value=""></option>
-              </c:otherwise>
-            </c:choose>
-            <c:forEach var="team" items="${teams}">
+      <c:if test="${job.closingDate lt today}">
+        <div class="row">
+          <div class="form-group col-xs-12 col-sm-12 col-md-4">
+            <label for="assignedTeam">Assigned Team</label>
+            <select name="assignedTeam">
               <c:choose>
-                <c:when test="${team eq job.assignedTeam}">
-                  <option value="${team}" selected="selected">${team}</option>
+                <c:when test="${empty job.assignedTeam}">
+                  <option value="" selected="selected"></option>
                 </c:when>
                 <c:otherwise>
-                  <option value="${team}">${team}</option>
+                  <option value=""></option>
                 </c:otherwise>
               </c:choose>
-            </c:forEach>
-          </select>
+              <c:forEach var="team" items="${teams}">
+                <c:choose>
+                  <c:when test="${team eq job.assignedTeam}">
+                    <option value="${team}" selected="selected">${team}</option>
+                  </c:when>
+                  <c:otherwise>
+                    <option value="${team}">${team}</option>
+                  </c:otherwise>
+                </c:choose>
+              </c:forEach>
+            </select>
+          </div>
         </div>
-      </div>
+        <div class="row">
+          <p class="error-msg">Note: Once you assign a hiring team, you won't be able to update the job posting anymore.</p>
+        </div>
+      </c:if>
       <div class="row">
         <button type="submit" class="btn btn-default">Submit</button>
         <a href="<c:url value="/jobs/${job._jobId}" />"><button type="button" class="btn btn-default">Cancel</button></a>

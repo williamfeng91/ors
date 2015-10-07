@@ -17,6 +17,7 @@ import javax.xml.bind.Unmarshaller;
 
 import au.edu.unsw.soacourse.ors.model.Job;
 import au.edu.unsw.soacourse.ors.model.JobList;
+import au.edu.unsw.soacourse.ors.model.RecruitmentStatus;
 
 
 public enum JobsDao {
@@ -157,7 +158,8 @@ public enum JobsDao {
 			List<Job> list = getAll();
 			for (Job item : list) {
 				if (item.get_jobId().equals(id)) {
-					list.remove(item);
+//					list.remove(item);
+					item.setStatus(RecruitmentStatus.ARCHIVED);
 
 					// write to database
 					JobList jl = new JobList();

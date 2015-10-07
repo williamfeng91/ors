@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import au.edu.unsw.soacourse.ors.beans.*;
+import au.edu.unsw.soacourse.ors.common.ApplicationStatus;
 import au.edu.unsw.soacourse.ors.common.RecruitmentStatus;
+import au.edu.unsw.soacourse.ors.dao.ApplicationsDao;
 import au.edu.unsw.soacourse.ors.dao.JobsDao;
 import au.edu.unsw.soacourse.ors.dao.UsersDao;
 
@@ -27,6 +29,7 @@ public class JobController {
 	
 	private static final String ORSKEY = "i-am-ors";
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	private static final String TODAY = DATE_FORMAT.format(new Date());
 	UsersDao usersDao;
 	
 	@Autowired
@@ -35,6 +38,7 @@ public class JobController {
 	@PostConstruct
 	public void setUpUserDB() {
 		usersDao = new UsersDao(context);
+		context.setAttribute("today", TODAY);
 	}
 	
 	@RequestMapping("/jobs/new")
@@ -204,7 +208,6 @@ public class JobController {
 		try {
 			Job j = JobsDao.instance.getById(id);
 			model.addAttribute("job", j);
-			model.addAttribute("statuses", RecruitmentStatus.values());
 			model.addAttribute("teams", usersDao.getAllTeams());
 			return "editJob";
 		} catch (Exception e) {
@@ -235,15 +238,30 @@ public class JobController {
 		updatedJob.setPositionType(positionType);
 		updatedJob.setLocation(location);
 		updatedJob.setDescription(description);
-		updatedJob.setStatus(RecruitmentStatus.valueOf(status));
-		if (assignedTeam.isEmpty()) {
-			assignedTeam = null;
+		if (status != null) {
+			updatedJob.setStatus(RecruitmentStatus.valueOf(status));
+		}
+		if (assignedTeam != null) {
+			if (assignedTeam.isEmpty()) {
+				assignedTeam = null;
+			} else {	// if hiring team is assigned and auto-check is done, proceed to next stage
+				// TODO
+//				if (AutoChecksDao.allDone(id)) {
+					updatedJob.setStatus(RecruitmentStatus.IN_REVIEW);
+					// update status for all applications of the job
+					List<Application> applications = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), id);
+					for (Application a : applications) {
+						a.setStatus(ApplicationStatus.IN_REVIEW);
+						ApplicationsDao.instance.update(a);
+					}
+//				}
+			}
 		}
 		updatedJob.setAssignedTeam(assignedTeam);
 		if (!validateInput(closingDate, salary, positionType, location, description, status, assignedTeam)) {
 			model.addAttribute("errorMsg", "Invalid form data");
 			model.addAttribute("job", updatedJob);
-			return "addJob";
+			return "redirect:/jobs/" + id + "/edit";
 		}
 		try {
 			JobsDao.instance.update(ORSKEY, user.getShortKey(), updatedJob);

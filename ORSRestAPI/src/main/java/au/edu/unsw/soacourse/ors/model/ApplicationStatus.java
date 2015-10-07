@@ -1,5 +1,5 @@
 package au.edu.unsw.soacourse.ors.model;
 
 public enum ApplicationStatus {
-	CREATED, RECEIVED_INVITATION, FINALISED, ARCHIVED
+	CREATED, IN_REVIEW, REVIEWED, RECEIVED_INVITATION, FINALISED, ARCHIVED
 }

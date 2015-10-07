@@ -16,6 +16,7 @@ import javax.xml.bind.Unmarshaller;
 
 import au.edu.unsw.soacourse.ors.model.Application;
 import au.edu.unsw.soacourse.ors.model.ApplicationList;
+import au.edu.unsw.soacourse.ors.model.ApplicationStatus;
 
 
 public enum ApplicationsDao {
@@ -137,7 +138,8 @@ public enum ApplicationsDao {
 			List<Application> list = getAll();
 			for (Application item : list) {
 				if (item.get_appId().equals(id)) {
-					list.remove(item);
+//					list.remove(item);
+					item.setStatus(ApplicationStatus.ARCHIVED);
 					
 					// write to database
 					ApplicationList al = new ApplicationList();
