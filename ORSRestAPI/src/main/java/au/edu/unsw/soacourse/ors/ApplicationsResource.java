@@ -42,19 +42,19 @@ public class ApplicationsResource {
 	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 	public Response newApplication(
 			@FormParam("_jobId") String _jobId,
-			@FormParam("personalDetails") String personalDetails,
+			@FormParam("name") String name,
 			@FormParam("cv") String cv,
 			@FormParam("resume") String resume,
 			@FormParam("status") String status
 	) {
-		if (!validateInput(_jobId, personalDetails, cv, resume, status)) {
+		if (!validateInput(_jobId, name, cv, resume, status)) {
 			throw new BadRequestException("Invalid form parameters");
 		}
 		String id = UUID.randomUUID().toString();
 		Application a = new Application();
 		a.set_appId(id);
 		a.set_jobId(_jobId);
-		a.setPersonalDetails(personalDetails);
+		a.setName(name);
 		a.setCv(cv);
 		a.setResume(resume);
 		a.setStatus(ApplicationStatus.valueOf(status));
@@ -121,7 +121,7 @@ public class ApplicationsResource {
 	
     private boolean validateInput(
     		String _jobId,
-    		String personalDetails,
+    		String name,
     		String cv,
     		String resume,
     		String status) {
@@ -133,7 +133,7 @@ public class ApplicationsResource {
 		} catch (NotFoundException e) {
 			return false;
 		}
-    	if (personalDetails == null || personalDetails.isEmpty()) {
+    	if (name == null || name.isEmpty()) {
     		return false;
     	}
     	if (cv == null || cv.isEmpty()) {

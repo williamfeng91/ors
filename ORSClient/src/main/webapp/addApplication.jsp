@@ -4,7 +4,7 @@
   <div class="container">
     
     <hgroup class="mb20">
-      <center><h1>Apply for Job</h1></center>
+      <h1>Apply for Job</h1>
       <c:choose>
         <c:when test="${not empty errorMsg}" >
           <h2 class="lead error-msg">${errorMsg}</h2>
@@ -28,8 +28,8 @@
       </div>
       <div class="row">
         <div class="form-group col-xs-12 col-sm-12 col-md-8">
-          <label for="personalDetails">Personal Details</label>
-          <textarea class="form-control" rows="10" name="personalDetails" maxLength="1000" required>${application.personalDetails}</textarea>
+          <label for="name">Name</label>
+          <input type="text" class="form-control" name="name" value="${application.name}" />
         </div>
       </div>
       <div class="row">

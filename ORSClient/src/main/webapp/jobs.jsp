@@ -25,7 +25,6 @@
               </div>
               <div class="col-xs-12 col-sm-12 col-md-2 left-col">
                 <ul class="meta-search">
-                  <li><a href="<c:url value="/jobs/${job._jobId}" />"><span>View job details</span></a></li>
                   <c:if test="${not empty user}">
                     <li>
                       <a href="<c:url value="/jobs/${job._jobId}/applications" />">
@@ -85,7 +84,7 @@
                       </a></p>
                     </c:when>
                     <c:when test="${job.status eq 'SENT_INVITATIONS'}">
-                      <p><a href="<c:url value="/jobs/${job._jobId}/invitations" />">
+                      <p><a href="<c:url value="/jobs/${job._jobId}/applications" />">
                         <button type="button" class="btn btn-default">View Invitation Status</button>
                       </a></p>
                       <p><a href="<c:url value="/jobs/${job._jobId}/finalList" />">
@@ -93,8 +92,12 @@
                       </a></p>
                     </c:when>
                     <c:when test="${job.status eq 'FINALISED'}">
+                      <p><a href="<c:url value="/jobs/${job._jobId}/delete" />">
+                        <button type="button" class="btn btn-default">Archive</button>
+                      </a></p>
                     </c:when>
                     <c:when test="${job.status eq 'ARCHIVED'}">
+                      <button type="button" class="btn btn-default disabled">Archived</button>
                     </c:when>
                   </c:choose>
                 </c:if>
@@ -119,7 +122,6 @@
               </div>
               <div class="col-xs-12 col-sm-12 col-md-2 left-col">
                 <ul class="meta-search">
-                  <li><a href="<c:url value="/jobs/${job._jobId}" />"><span>View job details</span></a></li>
                   <c:if test="${not empty user}">
                     <li>
                       <a href="<c:url value="/jobs/${job._jobId}/applications" />">
@@ -179,7 +181,7 @@
                       </a></p>
                     </c:when>
                     <c:when test="${job.status eq 'SENT_INVITATIONS'}">
-                      <p><a href="<c:url value="/jobs/${job._jobId}/invitations" />">
+                      <p><a href="<c:url value="/jobs/${job._jobId}/applications" />">
                         <button type="button" class="btn btn-default">View Invitation Status</button>
                       </a></p>
                       <p><a href="<c:url value="/jobs/${job._jobId}/finalList" />">
@@ -187,8 +189,12 @@
                       </a></p>
                     </c:when>
                     <c:when test="${job.status eq 'FINALISED'}">
+                      <p><a href="<c:url value="/jobs/${job._jobId}/delete" />">
+                        <button type="button" class="btn btn-default">Archive</button>
+                      </a></p>
                     </c:when>
                     <c:when test="${job.status eq 'ARCHIVED'}">
+                      <button type="button" class="btn btn-default disabled">Archived</button>
                     </c:when>
                   </c:choose>
                 </c:if>

@@ -9,7 +9,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -151,13 +150,18 @@ public class JobController {
 			if (j.getStatus().equals(RecruitmentStatus.CREATED)) {
 				return "redirect:/jobs";
 			}
+			List<Application> validApplications = new ArrayList<Application>();
 			List<Application> applications = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), jobId);
 			for (Application a : applications) {
 				if (ApplicationsDao.instance.isShortlistedByAllReviewers(ORSKEY, user.getShortKey(), a.get_appId())) {
 					a.setStatus(ApplicationStatus.SHORTLISTED);
 				}
+				if (a.getStatus().equals(ApplicationStatus.REVIEWED)
+						|| a.getStatus().equals(ApplicationStatus.SHORTLISTED)) {
+					validApplications.add(a);
+				}
 			}
-			model.addAttribute("applications", applications);
+			model.addAttribute("applications", validApplications);
 			model.addAttribute("job", j);
 			return "shortlist";
 		} catch (Exception e) {
@@ -220,6 +224,69 @@ public class JobController {
 			}
 			j.setStatus(RecruitmentStatus.SENT_INVITATIONS);
 			JobsDao.instance.update(ORSKEY, user.getShortKey(), j);
+			return "redirect:/jobs";
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMsg", e.getMessage());
+			return "error";
+		}
+	}
+	
+	@RequestMapping(value="/jobs/{jobId}/finalList", method={RequestMethod.GET})
+	public String visitFinalListPage(@PathVariable String jobId, HttpServletRequest request, ModelMap model) {
+		User user = (User) request.getSession().getAttribute("user");
+		if (user == null || !user.getRole().equals("manager")) {
+			model.addAttribute("errorMsg", "User has no permission");
+			return "login";
+		}
+		try {
+			Job j = JobsDao.instance.getById(jobId);
+			if (!j.getStatus().equals(RecruitmentStatus.SENT_INVITATIONS)) {
+				return "redirect:/jobs";
+			}
+			List<Application> validApplications = new ArrayList<Application>();
+			List<Application> applications = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), jobId);
+			for (Application a : applications) {
+				if (a.getStatus().equals(ApplicationStatus.ACCEPTED_INVITATION)) {
+					validApplications.add(a);
+				}
+			}
+			model.addAttribute("applications", validApplications);
+			model.addAttribute("job", j);
+			return "finalList";
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMsg", e.getMessage());
+			return "error";
+		}
+	}
+	
+	@RequestMapping(value="/jobs/{jobId}/finalList", method={RequestMethod.POST})
+	public String submitfinalList(@PathVariable String jobId, HttpServletRequest request, ModelMap model) {
+		User user = (User) request.getSession().getAttribute("user");
+		if (user == null || !user.getRole().equals("manager")) {
+			model.addAttribute("errorMsg", "User has no permission");
+			return "login";
+		}
+		try {
+			Job j = JobsDao.instance.getById(jobId);
+			if (!j.getStatus().equals(RecruitmentStatus.SENT_INVITATIONS)) {
+				return "redirect:/jobs";
+			}
+			List<Application> applications = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), jobId);
+			if (request.getParameter("selectedCandidate") != null) {
+				for (Application a : applications) {
+					if (request.getParameter("selectedCandidate").equals(a.get_appId())) {
+						// TODO send notifications
+					} else {
+						// TODO send notifications
+					}
+					a.setStatus(ApplicationStatus.FINALISED);
+					ApplicationsDao.instance.update(a);
+					j.setStatus(RecruitmentStatus.FINALISED);
+					JobsDao.instance.update(ORSKEY, user.getShortKey(), j);
+				}
+			}
 			return "redirect:/jobs";
 		} catch (Exception e) {
 			e.printStackTrace();

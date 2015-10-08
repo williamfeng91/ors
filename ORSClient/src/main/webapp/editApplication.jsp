@@ -28,8 +28,8 @@
       </div>
       <div class="row">
         <div class="form-group col-xs-12 col-sm-12 col-md-8">
-          <label for="personalDetails">Personal Details</label>
-          <textarea class="form-control" rows="10" name="personalDetails" maxLength="1000" required>${application.personalDetails}</textarea>
+          <label for="name">Name</label>
+          <textarea class="form-control" rows="10" name="name" maxLength="1000" required>${application.name}</textarea>
         </div>
       </div>
       <div class="row">

@@ -6,7 +6,7 @@ public class Application {
 
     private String _appId;
     private String _jobId;
-    private String personalDetails;
+    private String name;
     private String cv;
     private String resume;
     private ApplicationStatus status;
@@ -31,12 +31,12 @@ public class Application {
 		this._jobId = _jobId;
 	}
 
-	public String getPersonalDetails() {
-		return personalDetails;
+	public String getName() {
+		return name;
 	}
 
-	public void setPersonalDetails(String personalDetails) {
-		this.personalDetails = personalDetails;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getCv() {

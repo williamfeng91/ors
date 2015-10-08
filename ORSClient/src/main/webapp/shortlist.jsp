@@ -4,7 +4,7 @@
   <div class="container">
     
     <hgroup class="mb20">
-      <center><h1>Shortlist for ${job.positionType}</h1></center>
+      <h1>Shortlist for ${job.positionType}</h1>
       <c:choose>
         <c:when test="${not empty errorMsg}" >
           <h2 class="lead error-msg">${errorMsg}</h2>
@@ -25,8 +25,8 @@
           <td>Shortlist or not</td>
         </tr>
         <c:forEach var="application" items="${applications}">
-	      <tr>
-	        <td><a href="<c:url value="/applications/${application._appId}/reviews" />"><c:out value="${application.personalDetails}"/></a></td>
+          <tr>
+            <td><a href="<c:url value="/applications/${application._appId}/reviews" />"><c:out value="${application.name}"/></a></td>
             <td>
               <c:choose>
                 <c:when test="${application.status eq 'SHORTLISTED'}">
@@ -37,8 +37,8 @@
                 </c:otherwise>
               </c:choose>
             </td>
-	      </tr>
-	    </c:forEach>
+          </tr>
+        </c:forEach>
       </table>
       <c:if test="${job.status eq 'IN_REVIEW'}">
         <div class="row">

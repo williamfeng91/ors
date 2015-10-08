@@ -4,7 +4,7 @@
   <div class="container">
     
     <hgroup class="mb20">
-      <h1>Reviews<c:if test="${not empty application}"> for <a href="<c:url value="/applications/${application._appId}" />">${application.personalDetails}</a></c:if></h1>
+      <h1>Reviews<c:if test="${not empty application}"> for <a href="<c:url value="/applications/${application._appId}" />">${application.name}</a></c:if></h1>
       <c:choose>
         <c:when test="${not empty errorMsg}" >
           <h2 class="lead error-msg">${errorMsg}</h2>
@@ -13,6 +13,9 @@
           <h2 class="lead success-msg">${successMsg}</h2>
         </c:when>
       </c:choose>
+      <c:if test="${empty reviews}">
+        <h2 class="lead">No reviews</h2>
+      </c:if>
     </hgroup>
     
     <c:forEach var="review" items="${reviews}">

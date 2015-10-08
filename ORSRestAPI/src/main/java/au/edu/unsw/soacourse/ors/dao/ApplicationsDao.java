@@ -115,6 +115,10 @@ public enum ApplicationsDao {
 			for (int i = 0; i < list.size(); ++i) {
 				Application item = list.get(i);
 				if (item.get_appId().equals(updatedApplication.get_appId())) {
+					// do not update archived job
+					if (item.getStatus().equals(ApplicationStatus.ARCHIVED)) {
+						continue;
+					}
 					list.set(i, updatedApplication);
 					
 					// write to database

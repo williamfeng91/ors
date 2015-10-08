@@ -32,7 +32,7 @@ public enum ApplicationsDao {
 
     public Application create(
     		String _jobId,
-    		String personalDetails,
+    		String name,
     		String cv,
     		String resume,
     		String status) {
@@ -40,7 +40,7 @@ public enum ApplicationsDao {
     	Response r = client.path("/applications")
     		.accept(MediaType.APPLICATION_JSON)
     		.form(new Form().param("_jobId", _jobId)
-    				.param("personalDetails", personalDetails)
+    				.param("name", name)
     				.param("cv", cv)
     				.param("resume", resume)
     				.param("status", status));
@@ -91,6 +91,9 @@ public enum ApplicationsDao {
     
     public boolean isShortlistedByAllReviewers(String orsKey, String shortKey, String appId) {
     	List<Review> reviews = ReviewsDao.instance.getByApplication(orsKey, shortKey, appId);
+    	if (reviews.isEmpty()) {
+    		return false;
+    	}
     	for (Review r : reviews) {
     		if (r.getDecision().equals(ReviewDecision.REJECT)) {
     			return false;
@@ -105,7 +108,8 @@ public enum ApplicationsDao {
 			return false;
 		}
 		for (Application item : al) {
-			if (!item.getStatus().equals(ApplicationStatus.REVIEWED)) {
+			if (!item.getStatus().equals(ApplicationStatus.REVIEWED)
+					&& !item.getStatus().equals(ApplicationStatus.ARCHIVED)) {
 				return false;
 			}
 		}

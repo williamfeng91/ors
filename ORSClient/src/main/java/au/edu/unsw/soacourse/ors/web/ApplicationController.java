@@ -38,16 +38,16 @@ public class ApplicationController {
 	@RequestMapping(value="/applications", method={RequestMethod.POST})
 	public String createNewApplication(HttpServletRequest request, ModelMap model) {
 		String _jobId = request.getParameter("_jobId");
-		String personalDetails = request.getParameter("personalDetails");
+		String name = request.getParameter("name");
 		String cv = request.getParameter("cv");
 		String resume = request.getParameter("resume");
 
 		Application a = new Application();
 		a.set_jobId(_jobId);
-		a.setPersonalDetails(personalDetails);
+		a.setName(name);
 		a.setCv(cv);
 		a.setResume(resume);
-		if (!validateInput(_jobId, personalDetails, cv, resume)) {
+		if (!validateInput(_jobId, name, cv, resume)) {
 			model.addAttribute("errorMsg", "Invalid form data");
 			model.addAttribute("application", a);
 			return "addApplication";
@@ -55,7 +55,7 @@ public class ApplicationController {
 		try {
 			Application newApplication = ApplicationsDao.instance.create(
 					_jobId,
-					personalDetails,
+					name,
 					cv,
 					resume,
 					ApplicationStatus.CREATED.toString());
@@ -94,19 +94,14 @@ public class ApplicationController {
 			return "login";
 		}
 		try {
-			List<Application> list;
-			list = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey().toString(), jobId);
-			if (user.getRole().equals("reviewer")) {
-				// split into two lists: the ones the current user has reviewed and those haven't been reviewed
-				List<Application> reviewedApplications = new ArrayList<Application>();
-				for (Application a: list) {
-					if (ReviewsDao.instance.hasBeenReviewedBy(ORSKEY, user.getShortKey(), a.get_appId(), user.get_uid())) {
-						// current user is the author of the review
-						reviewedApplications.add(a);
-					}
+			List<Application> applications = new ArrayList<Application>();
+			List<Application> list = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey().toString(), jobId);
+			for (Application a: list) {
+				if (user.getRole().equals("reviewer")
+						&& ReviewsDao.instance.hasBeenReviewedBy(ORSKEY, user.getShortKey(), a.get_appId(), user.get_uid())) {
+					// current user is the author of the review
+					a.setStatus(ApplicationStatus.REVIEWED);
 				}
-				list.removeAll(reviewedApplications);
-				model.addAttribute("reviewedApplications", reviewedApplications);
 			}
 			Job j = JobsDao.instance.getById(jobId);
 			model.addAttribute("applications", list);
@@ -152,16 +147,16 @@ public class ApplicationController {
 	@RequestMapping(value="/applications/{id}/update", method={RequestMethod.POST})
 	public String updateApplication(@PathVariable String id, HttpServletRequest request, ModelMap model) {
 		String _jobId = request.getParameter("_jobId");
-		String personalDetails = request.getParameter("personalDetails");
+		String name = request.getParameter("name");
 		String cv = request.getParameter("cv");
 		String resume = request.getParameter("resume");
 
 		Application updatedApplication = ApplicationsDao.instance.getById(id);
 		updatedApplication.set_jobId(_jobId);
-		updatedApplication.setPersonalDetails(personalDetails);
+		updatedApplication.setName(name);
 		updatedApplication.setCv(cv);
 		updatedApplication.setResume(resume);
-		if (!validateInput(_jobId, personalDetails, cv, resume)) {
+		if (!validateInput(_jobId, name, cv, resume)) {
 			model.addAttribute("errorMsg", "Invalid form data");
 			model.addAttribute("application", updatedApplication);
 			return "editApplication";
@@ -169,6 +164,34 @@ public class ApplicationController {
 		try {
 			ApplicationsDao.instance.update(updatedApplication);
 			return "redirect:/applications/" + id;
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMsg", e.getMessage());
+			return "error";
+		}
+	}
+	
+	@RequestMapping("/applications/{appId}/acceptInvitation")
+	public String acceptInvitation(@PathVariable String appId, ModelMap model) {
+		try {
+			Application a = ApplicationsDao.instance.getById(appId);
+			a.setStatus(ApplicationStatus.ACCEPTED_INVITATION);
+			ApplicationsDao.instance.update(a);
+			return "redirect:/applications/" + appId;
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMsg", e.getMessage());
+			return "error";
+		}
+	}
+	
+	@RequestMapping("/applications/{appId}/rejectInvitation")
+	public String rejectInvitation(@PathVariable String appId, ModelMap model) {
+		try {
+			Application a = ApplicationsDao.instance.getById(appId);
+			a.setStatus(ApplicationStatus.FINALISED);
+			ApplicationsDao.instance.update(a);
+			return "redirect:/applications/" + appId;
 		} catch (Exception e) {
 			e.printStackTrace();
 			model.addAttribute("errorMsg", e.getMessage());
@@ -190,7 +213,7 @@ public class ApplicationController {
 	
 	private boolean validateInput(
     		String _jobId,
-    		String personalDetails,
+    		String name,
     		String cv,
     		String resume) {
     	if (_jobId == null || _jobId.isEmpty()) {
@@ -201,7 +224,7 @@ public class ApplicationController {
 		} catch (Exception e) {
 			return false;
 		}
-    	if (personalDetails == null || personalDetails.isEmpty()) {
+    	if (name == null || name.isEmpty()) {
     		return false;
     	}
     	if (cv == null || cv.isEmpty()) {

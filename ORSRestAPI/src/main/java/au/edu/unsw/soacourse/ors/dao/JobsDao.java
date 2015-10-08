@@ -135,6 +135,10 @@ public enum JobsDao {
 			for (int i = 0; i < list.size(); ++i) {
 				Job item = list.get(i);
 				if (item.get_jobId().equals(updatedJob.get_jobId())) {
+					// do not update archived job
+					if (item.getStatus().equals(RecruitmentStatus.ARCHIVED)) {
+						continue;
+					}
 					list.set(i, updatedJob);
 
 					// write to database

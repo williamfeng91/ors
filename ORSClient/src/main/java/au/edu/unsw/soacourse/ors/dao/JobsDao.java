@@ -1,6 +1,8 @@
 package au.edu.unsw.soacourse.ors.dao;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.core.Form;
@@ -20,6 +22,8 @@ public enum JobsDao {
     private static final String REST_URI = "http://localhost:8080/ORSRestAPI";
     private static final String ORSKEY = "ORSKey";
     private static final String SHORTKEY = "ShortKey";
+	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	private static final String TODAY = DATE_FORMAT.format(new Date());
     private WebClient client;
     private List<Object> providers;
 
@@ -73,7 +77,7 @@ public enum JobsDao {
     
     // For external users to see all open jobs
     public List<Job> getOpenJobs() {
-    	return search(null, null, null, null, null, null, null, null, null, RecruitmentStatus.CREATED.toString(), null);
+    	return search(null, null, TODAY, null, null, null, null, null, null, RecruitmentStatus.CREATED.toString(), null);
     }
     
     // For reviewers to see jobs assigned to them

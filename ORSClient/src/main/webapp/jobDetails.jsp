@@ -58,7 +58,9 @@
           </c:if>
         </c:when>
         <c:otherwise>
-          <a href="<c:url value="/jobs/${job._jobId}/apply" />"><button class="btn btn-default">Apply</button></a>
+          <c:if test="${job.closingDate ge today}">
+            <a href="<c:url value="/jobs/${job._jobId}/apply" />"><button class="btn btn-default">Apply</button></a>
+          </c:if>
         </c:otherwise>
       </c:choose>
     </div>
