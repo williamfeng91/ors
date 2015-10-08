@@ -94,12 +94,11 @@ public class ApplicationController {
 			return "login";
 		}
 		try {
-			List<Application> applications = new ArrayList<Application>();
 			List<Application> list = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey().toString(), jobId);
 			for (Application a: list) {
 				if (user.getRole().equals("reviewer")
 						&& ReviewsDao.instance.hasBeenReviewedBy(ORSKEY, user.getShortKey(), a.get_appId(), user.get_uid())) {
-					// current user is the author of the review
+					// mark that the current user has reviewed this application
 					a.setStatus(ApplicationStatus.REVIEWED);
 				}
 			}

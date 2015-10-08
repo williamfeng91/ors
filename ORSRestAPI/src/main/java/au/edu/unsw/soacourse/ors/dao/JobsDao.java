@@ -23,8 +23,7 @@ import au.edu.unsw.soacourse.ors.model.RecruitmentStatus;
 public enum JobsDao {
     instance;
 
-    private final String RESOURCE_LOCATION = System.getProperty("catalina.home") + File.separator + "webapps"
-			+ File.separator + "ROOT/resources/";
+    private final String RESOURCE_LOCATION = getClass().getResource("/").getPath().replace("classes/", "resources/");
     private final String DATASOURCE = RESOURCE_LOCATION + "Jobs.xml";
     JAXBContext context;
 
@@ -116,8 +115,8 @@ public enum JobsDao {
 					&& (closingDateTo == null || closingDateTo.compareTo(item.getClosingDate()) >= 0)
 					&& (salaryFrom <= item.getSalary())
 					&& (salaryTo >= item.getSalary())
-					&& (positionType == null || positionType.equalsIgnoreCase(item.getPositionType()))
-					&& (location == null || location.equalsIgnoreCase(item.getLocation()))
+					&& (positionType == null || item.getPositionType().toLowerCase().contains(positionType.toLowerCase()))
+					&& (location == null || item.getLocation().toLowerCase().contains(location.toLowerCase()))
 					&& (description == null || item.getDescription().toLowerCase().contains(description.toLowerCase()))
 					&& (status == null || status.equals(item.getStatus().toString()))
                     && (assignedTeam == null || assignedTeam.equals(item.getAssignedTeam()))

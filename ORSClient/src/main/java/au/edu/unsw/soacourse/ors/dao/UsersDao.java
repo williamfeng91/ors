@@ -28,11 +28,9 @@ public class UsersDao {
     private String dataLocation;
     private WebClient client;
     private List<Object> providers;
-    private ServletContext servletContext;
     private JAXBContext jaxbContext;
 
     public UsersDao(ServletContext servletContext) {
-    	this.servletContext = servletContext;
     	dataLocation = servletContext.getRealPath(DATASOURCE);
     	providers = new ArrayList<Object>();
         providers.add( new JacksonJaxbJsonProvider() );

@@ -21,8 +21,7 @@ import au.edu.unsw.soacourse.ors.model.ReviewList;
 public enum ReviewsDao {
     instance;
     
-    private final String RESOURCE_LOCATION = System.getProperty("catalina.home") + File.separator + "webapps"
-			+ File.separator + "ROOT/resources/";
+    private final String RESOURCE_LOCATION = getClass().getResource("/").getPath().replace("classes/", "resources/");
     private final String DATASOURCE = RESOURCE_LOCATION + "Reviews.xml";
     JAXBContext context;
 

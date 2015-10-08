@@ -4,7 +4,7 @@
   <div class="container">
     
     <hgroup class="mb20">
-      <center><h1>Update Job</h1></center>
+      <h1>Update Job</h1>
       <c:choose>
         <c:when test="${not empty errorMsg}" >
           <h2 class="lead error-msg">${errorMsg}</h2>
@@ -56,36 +56,6 @@
           <textarea class="form-control" rows="10" name="description" maxLength="1000" required>${job.description}</textarea>
         </div>
       </div>
-      <c:if test="${job.closingDate lt today}">
-        <div class="row">
-          <div class="form-group col-xs-12 col-sm-12 col-md-4">
-            <label for="assignedTeam">Assigned Team</label>
-            <select name="assignedTeam">
-              <c:choose>
-                <c:when test="${empty job.assignedTeam}">
-                  <option value="" selected="selected"></option>
-                </c:when>
-                <c:otherwise>
-                  <option value=""></option>
-                </c:otherwise>
-              </c:choose>
-              <c:forEach var="team" items="${teams}">
-                <c:choose>
-                  <c:when test="${team eq job.assignedTeam}">
-                    <option value="${team}" selected="selected">${team}</option>
-                  </c:when>
-                  <c:otherwise>
-                    <option value="${team}">${team}</option>
-                  </c:otherwise>
-                </c:choose>
-              </c:forEach>
-            </select>
-          </div>
-        </div>
-        <div class="row">
-          <p class="error-msg">Note: Once you assign a hiring team, you won't be able to update the job posting anymore.</p>
-        </div>
-      </c:if>
       <div class="row">
         <button type="submit" class="btn btn-default">Submit</button>
         <a href="<c:url value="/jobs/${job._jobId}" />"><button type="button" class="btn btn-default">Cancel</button></a>

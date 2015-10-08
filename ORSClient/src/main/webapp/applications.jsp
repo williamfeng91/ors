@@ -23,8 +23,10 @@
               </div>
               <div class="col-xs-12 col-sm-12 col-md-2 left-col">
                 <ul class="meta-search">
-                  <c:if test="${not empty user && user.role eq 'manager' && application.status ne 'CREATED'}">
+                  <c:if test="${not empty user && application.status ne 'CREATED'}">
                     <li><a href="<c:url value="/applications/${application._appId}/autoCheckResults" />"><span>View auto-check results</span></a></li>
+                  </c:if>
+                  <c:if test="${not empty user && user.role eq 'manager' && application.status ne 'CREATED'}">
                     <li><a href="<c:url value="/applications/${application._appId}/reviews" />"><span>View reviews</span></a></li>
                   </c:if>
                 </ul>
@@ -54,7 +56,9 @@
                       <p><button type="button" class="btn btn-default disabled">Invitation Accepted</button></p>
                     </c:when>
                     <c:when test="${application.status eq 'FINALISED'}">
-                      <p><button type="button" class="btn btn-default disabled">Finalised</button></p>
+                      <p><a href="<c:url value="/applications/${application._appId}/delete" />">
+                        <button type="button" class="btn btn-default">Archive</button>
+                      </a></p>
                     </c:when>
                     <c:when test="${application.status eq 'ARCHIVED'}">
                       <p><button type="button" class="btn btn-default disabled">Archived</button></p>
@@ -67,9 +71,6 @@
                       <p><button type="button" class="btn btn-default disabled">Waiting for Auto-check</button></p>
                     </c:when>
                     <c:when test="${application.status eq 'IN_REVIEW'}">
-                      <p><a href="<c:url value="/applications/${application._appId}/autoCheckResults" />">
-                        <button type="button" class="btn btn-default">View auto-check results</button>
-                      </a></p>
                       <p><a href="<c:url value="/applications/${application._appId}/review" />">
                         <button type="button" class="btn btn-default">Review</button>
                       </a></p>

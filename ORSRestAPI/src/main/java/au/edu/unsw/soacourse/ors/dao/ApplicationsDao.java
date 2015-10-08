@@ -22,8 +22,7 @@ import au.edu.unsw.soacourse.ors.model.ApplicationStatus;
 public enum ApplicationsDao {
     instance;
     
-    private final String RESOURCE_LOCATION = System.getProperty("catalina.home") + File.separator + "webapps"
-			+ File.separator + "ROOT/resources/";
+    private final String RESOURCE_LOCATION = getClass().getResource("/").getPath().replace("classes/", "resources/");
     private final String DATASOURCE = RESOURCE_LOCATION + "Applications.xml";
     JAXBContext context;
 

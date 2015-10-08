@@ -42,7 +42,7 @@
       </table>
       <c:if test="${job.status eq 'IN_REVIEW'}">
         <div class="row">
-          <button type="submit" class="btn btn-default">Submit</button>
+          <button type="submit" class="btn btn-default">Send Invitations</button>
           <a href="<c:url value="/jobs" />"><button type="button" class="btn btn-default">Cancel</button></a>
         </div>
       </c:if>

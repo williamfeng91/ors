@@ -13,9 +13,9 @@
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <form class="navbar-form navbar-left" role="search" action="" method="post">
+      <form class="navbar-form navbar-left" action="<c:url value="/advSearchJob" />" method="post">
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="keywords" name="searchStr">
+          <input type="text" class="form-control" placeholder="position" name="positionType">
         </div>
         <button type="submit" class="btn btn-default">Search</button>
       </form>

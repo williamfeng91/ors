@@ -7,7 +7,10 @@
     <bean class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer"/>
     <jaxrs:server id="services" address="/">
         <jaxrs:serviceBeans>
-            <bean class="au.edu.unsw.soacourse.ors.JobPostingsResource"/>
+            <bean class="au.edu.unsw.soacourse.ors.JobsResource"/>
+            <bean class="au.edu.unsw.soacourse.ors.ApplicationsResource"/>
+            <bean class="au.edu.unsw.soacourse.ors.ReviewsResource"/>
+            <bean class="au.edu.unsw.soacourse.ors.UsersResource"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>

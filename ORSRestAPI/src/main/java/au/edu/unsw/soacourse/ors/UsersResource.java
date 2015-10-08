@@ -15,8 +15,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import au.edu.unsw.soacourse.ors.dao.ReviewsDao;
-import au.edu.unsw.soacourse.ors.dao.UsersDao;
+import au.edu.unsw.soacourse.ors.dao.*;
 import au.edu.unsw.soacourse.ors.model.*;
 
 @Path("/users")

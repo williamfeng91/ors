@@ -103,14 +103,11 @@ public class JobController {
 			if (user != null && user.getRole().equals("manager")) {
 				list = JobsDao.instance.getAll(ORSKEY, user.getShortKey().toString());
 				// if all applications of a job are reviewed, proceed to next recruitment stage
-				List<Job> processedJobs = new ArrayList<Job>();
 				for (Job item : list) {
 					if (ApplicationsDao.instance.allReviewed(ORSKEY, user.getShortKey(), item.get_jobId())) {
-						processedJobs.add(item);
+						item.setStatus(RecruitmentStatus.PROCESSED);
 					}
 				}
-				list.removeAll(processedJobs);
-				model.addAttribute("processedJobs", processedJobs);
 			} else if (user != null && user.getRole().equals("reviewer")) {
 				list = JobsDao.instance.getAssignedJobs(ORSKEY, user.getShortKey(), user.getDepartment());
 			} else {
@@ -204,8 +201,8 @@ public class JobController {
 		}
 	}
 	
-	@RequestMapping("/jobs/{jobId}/sendInvitations")
-	public String sendInvitations(@PathVariable String jobId, HttpServletRequest request, ModelMap model) {
+	@RequestMapping(value="/jobs/{jobId}/invitationStatus", method={RequestMethod.GET})
+	public String visitInvitationStatusPage(@PathVariable String jobId, HttpServletRequest request, ModelMap model) {
 		User user = (User) request.getSession().getAttribute("user");
 		if (user == null || !user.getRole().equals("manager")) {
 			model.addAttribute("errorMsg", "User has no permission");
@@ -213,18 +210,19 @@ public class JobController {
 		}
 		try {
 			Job j = JobsDao.instance.getById(jobId);
-			if (!j.getStatus().equals(RecruitmentStatus.PROCESSED)) {
+			if (!j.getStatus().equals(RecruitmentStatus.SENT_INVITATIONS)) {
 				return "redirect:/jobs";
 			}
+			List<Application> validApplications = new ArrayList<Application>();
 			List<Application> applications = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), jobId);
 			for (Application a : applications) {
-				if (a.getStatus().equals(ApplicationStatus.SHORTLISTED)) {
-					// TODO send invitation
+				if (a.getStatus().equals(ApplicationStatus.ACCEPTED_INVITATION)) {
+					validApplications.add(a);
 				}
 			}
-			j.setStatus(RecruitmentStatus.SENT_INVITATIONS);
-			JobsDao.instance.update(ORSKEY, user.getShortKey(), j);
-			return "redirect:/jobs";
+			model.addAttribute("applications", validApplications);
+			model.addAttribute("job", j);
+			return "invitationStatus";
 		} catch (Exception e) {
 			e.printStackTrace();
 			model.addAttribute("errorMsg", e.getMessage());
@@ -276,6 +274,9 @@ public class JobController {
 			List<Application> applications = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), jobId);
 			if (request.getParameter("selectedCandidate") != null) {
 				for (Application a : applications) {
+					if (a.getStatus().equals(ApplicationStatus.ARCHIVED)) {
+						continue;
+					}
 					if (request.getParameter("selectedCandidate").equals(a.get_appId())) {
 						// TODO send notifications
 					} else {
@@ -283,9 +284,9 @@ public class JobController {
 					}
 					a.setStatus(ApplicationStatus.FINALISED);
 					ApplicationsDao.instance.update(a);
-					j.setStatus(RecruitmentStatus.FINALISED);
-					JobsDao.instance.update(ORSKEY, user.getShortKey(), j);
 				}
+				j.setStatus(RecruitmentStatus.FINALISED);
+				JobsDao.instance.update(ORSKEY, user.getShortKey(), j);
 			}
 			return "redirect:/jobs";
 		} catch (Exception e) {
@@ -369,7 +370,25 @@ public class JobController {
 	@RequestMapping("/jobs/{id}/edit")
 	public String visitEditJobPage(@PathVariable String id, HttpServletRequest request, ModelMap model) {
 		User user = (User) request.getSession().getAttribute("user");
-		if (user == null) {
+		if (user == null || !user.getRole().equals("manager")) {
+			model.addAttribute("errorMsg", "User has no permission");
+			return "login";
+		}
+		try {
+			Job j = JobsDao.instance.getById(id);
+			model.addAttribute("job", j);
+			return "editJob";
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMsg", e.getMessage());
+			return "error";
+		}
+	}
+	
+	@RequestMapping("/jobs/{id}/assignTeam")
+	public String visitAssignTeamPage(@PathVariable String id, HttpServletRequest request, ModelMap model) {
+		User user = (User) request.getSession().getAttribute("user");
+		if (user == null || !user.getRole().equals("manager")) {
 			model.addAttribute("errorMsg", "User has no permission");
 			return "login";
 		}
@@ -377,7 +396,7 @@ public class JobController {
 			Job j = JobsDao.instance.getById(id);
 			model.addAttribute("job", j);
 			model.addAttribute("teams", usersDao.getAllTeams());
-			return "editJob";
+			return "assignTeam";
 		} catch (Exception e) {
 			e.printStackTrace();
 			model.addAttribute("errorMsg", e.getMessage());
@@ -401,18 +420,28 @@ public class JobController {
 		String assignedTeam = request.getParameter("assignedTeam");
 
 		Job updatedJob = JobsDao.instance.getById(id);
-		updatedJob.setClosingDate(closingDate);
-		updatedJob.setSalary(Integer.parseInt(salary));
-		updatedJob.setPositionType(positionType);
-		updatedJob.setLocation(location);
-		updatedJob.setDescription(description);
+		if (closingDate != null) {
+			updatedJob.setClosingDate(closingDate);
+		}
+		if (salary != null) {
+			updatedJob.setSalary(Integer.parseInt(salary));
+		}
+		if (positionType != null) {
+			updatedJob.setPositionType(positionType);
+		}
+		if (location != null) {
+			updatedJob.setLocation(location);
+		}
+		if (description != null) {
+			updatedJob.setDescription(description);
+		}
 		if (status != null) {
 			updatedJob.setStatus(RecruitmentStatus.valueOf(status));
 		}
 		if (assignedTeam != null) {
 			if (assignedTeam.isEmpty()) {
 				assignedTeam = null;
-			} else {	// if hiring team is assigned and auto-check is done, proceed to next stage
+			} else {	// if hiring team is assigned and auto-check is done, proceed to next recruitment stage
 				// TODO
 //				if (AutoChecksDao.allDone(id)) {
 					updatedJob.setStatus(RecruitmentStatus.IN_REVIEW);
@@ -424,8 +453,8 @@ public class JobController {
 					}
 //				}
 			}
+			updatedJob.setAssignedTeam(assignedTeam);
 		}
-		updatedJob.setAssignedTeam(assignedTeam);
 		if (!validateInput(closingDate, salary, positionType, location, description, status, assignedTeam)) {
 			model.addAttribute("errorMsg", "Invalid form data");
 			model.addAttribute("job", updatedJob);
@@ -441,15 +470,23 @@ public class JobController {
 		}
 	}
 	
-	@RequestMapping(value="/jobs/{id}/delete")
-	public String deleteJob(@PathVariable String id, HttpServletRequest request, ModelMap model) {
+	@RequestMapping(value="/jobs/{jobId}/delete")
+	public String deleteJob(@PathVariable String jobId, HttpServletRequest request, ModelMap model) {
 		User user = (User) request.getSession().getAttribute("user");
 		if (user == null) {
 			model.addAttribute("errorMsg", "User has no permission");
 			return "login";
 		}
 		try {
-			JobsDao.instance.delete(ORSKEY, user.getShortKey(), id);
+			// Archive applications as well
+			List<Application> applications = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), jobId);
+			if (request.getParameter("selectedCandidate") != null) {
+				for (Application a : applications) {
+					a.setStatus(ApplicationStatus.ARCHIVED);
+					ApplicationsDao.instance.update(a);
+				}
+			}
+			JobsDao.instance.delete(ORSKEY, user.getShortKey(), jobId);
 			return "redirect:/jobs";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -466,32 +503,27 @@ public class JobController {
     		String description,
     		String status,
     		String assignedTeam) {
-    	if (closingDate == null || closingDate.isEmpty()) {
+    	if (closingDate != null) {
+	    	try {
+				Date d = DATE_FORMAT.parse(closingDate);
+		    	if (!DATE_FORMAT.format(d).equals(closingDate)) {
+		            return false;
+		        }
+			} catch (ParseException e) {
+				return false;
+			}
+    	}
+    	if (salary != null) {
+        	try {
+    			Integer.parseInt(salary);
+    		} catch (NumberFormatException e) {
+    			return false;
+    		}
+    	}
+    	if (positionType != null && positionType.isEmpty()) {
     		return false;
     	}
-    	try {
-			Date d = DATE_FORMAT.parse(closingDate);
-	    	if (!DATE_FORMAT.format(d).equals(closingDate)) {
-	            return false;
-	        }
-		} catch (ParseException e) {
-			return false;
-		}
-    	if (salary == null || salary.isEmpty()) {
-    		return false;
-    	}
-    	try {
-			Integer.parseInt(salary);
-		} catch (NumberFormatException e) {
-			return false;
-		}
-    	if (positionType == null || positionType.isEmpty()) {
-    		return false;
-    	}
-    	if (location == null || location.isEmpty()) {
-    		return false;
-    	}
-    	if (description == null) {
+    	if (location != null && location.isEmpty()) {
     		return false;
     	}
     	if (status != null) {

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<applications>
+    <application>
+        <_appId>dcdead21-5b9f-4069-a9d2-9fe88dc8c713</_appId>
+        <_jobId>c6df2e17-468c-4eee-a137-c3267e5e3e7d</_jobId>
+        <name>William</name>
+        <cv>abcd</cv>
+        <resume>defg</resume>
+        <status>ARCHIVED</status>
+    </application>
+    <application>
+        <_appId>0608bae6-dcad-471d-afad-29326443929b</_appId>
+        <_jobId>c6df2e17-468c-4eee-a137-c3267e5e3e7d</_jobId>
+        <name>William F</name>
+        <cv>qwer</cv>
+        <resume>asdf</resume>
+        <status>FINALISED</status>
+    </application>
+    <application>
+        <_appId>ecf3e260-f02d-481b-97a9-f63d5fe466bb</_appId>
+        <_jobId>c6df2e17-468c-4eee-a137-c3267e5e3e7d</_jobId>
+        <name>Mandy</name>
+        <cv>fdas</cv>
+        <resume>asdf</resume>
+        <status>FINALISED</status>
+    </application>
+</applications>
