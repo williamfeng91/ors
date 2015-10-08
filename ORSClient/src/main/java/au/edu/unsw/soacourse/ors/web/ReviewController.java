@@ -2,8 +2,11 @@ package au.edu.unsw.soacourse.ors.web;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,14 +14,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import au.edu.unsw.soacourse.ors.beans.*;
+import au.edu.unsw.soacourse.ors.common.ApplicationStatus;
+import au.edu.unsw.soacourse.ors.common.RecruitmentStatus;
 import au.edu.unsw.soacourse.ors.common.ReviewDecision;
+import au.edu.unsw.soacourse.ors.dao.JobsDao;
 import au.edu.unsw.soacourse.ors.dao.ReviewsDao;
 import au.edu.unsw.soacourse.ors.dao.ApplicationsDao;
+import au.edu.unsw.soacourse.ors.dao.UsersDao;
 
 @Controller
 public class ReviewController {
 	
 	private static final String ORSKEY = "i-am-ors";
+	UsersDao usersDao;
+	
+	@Autowired
+	ServletContext context;
+	
+	@PostConstruct
+	public void setUpUserDB() {
+		usersDao = new UsersDao(context);
+	}
 	
 	@RequestMapping("/applications/{appId}/review")
 	public String visitNewReviewPage(@PathVariable String appId, HttpServletRequest request, ModelMap model) {
@@ -69,6 +85,13 @@ public class ReviewController {
 					user.get_uid(),
 					comments,
 					decision);
+			if (newReview != null
+					&& ReviewsDao.instance.getByApplication(ORSKEY, user.getShortKey(), appId).size()
+						== usersDao.getByHireTeam(user.getDepartment()).size()) {
+				// if everyone in the team has reviewed on an application, proceed to next application stage
+				a.setStatus(ApplicationStatus.REVIEWED);
+				ApplicationsDao.instance.update(a);
+			}
 			return "redirect:/jobs/" + a.get_jobId() + "/applications/";
 		} catch (Exception e) {
 			e.printStackTrace();

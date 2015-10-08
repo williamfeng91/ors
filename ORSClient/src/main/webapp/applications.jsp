@@ -10,7 +10,7 @@
           <h2 class="lead error-msg">${errorMsg}</h2>
         </c:when>
         <c:otherwise>
-          <h2 class="lead"><strong class="text-danger">${fn:length(applications)}</strong> applications were found</h2>
+          <h2 class="lead"><strong class="text-danger">${fn:length(reviewedApplications)+fn:length(applications)}</strong> applications were found</h2>
         </c:otherwise>
       </c:choose>
     </hgroup>
@@ -45,15 +45,18 @@
                       <p><button type="button" class="btn btn-default disabled">In Review</button></p>
                     </c:when>
                     <c:when test="${application.status eq 'REVIEWED'}">
-                      <p><a href="<c:url value="/applications/${application._appId}" />">
-                        <button type="button" class="btn btn-default">Review Completed</button>
+                      <p><a href="<c:url value="/applications/${application._appId}/reviews" />">
+                        <button type="button" class="btn btn-default">View Reviews</button>
                       </a></p>
                     </c:when>
-                    <c:when test="${application.status eq 'RECEIVED_INVITATION'}">
+                    <c:when test="${application.status eq 'SHORTLISTED'}">
+                      <p><button type="button" class="btn btn-default disabled">Shortlisted</button></p>
                     </c:when>
                     <c:when test="${application.status eq 'FINALISED'}">
+                      <p><button type="button" class="btn btn-default disabled">Finalised</button></p>
                     </c:when>
                     <c:when test="${application.status eq 'ARCHIVED'}">
+                      <p><button type="button" class="btn btn-default disabled">Archived</button></p>
                     </c:when>
                   </c:choose>
                 </c:if>
@@ -65,17 +68,9 @@
                     <c:when test="${application.status eq 'IN_REVIEW'}">
                       <p><button type="button" class="btn btn-default disabled">Reviewed</button></p>
                     </c:when>
-                    <c:when test="${application.status eq 'REVIEWED'}">
-                      <p><a href="<c:url value="/applications/${application._appId}" />">
-                        <button type="button" class="btn btn-default">Review Completed</button>
-                      </a></p>
-                    </c:when>
-                    <c:when test="${application.status eq 'RECEIVED_INVITATION'}">
-                    </c:when>
-                    <c:when test="${application.status eq 'FINALISED'}">
-                    </c:when>
-                    <c:when test="${application.status eq 'ARCHIVED'}">
-                    </c:when>
+                    <c:otherwise>
+                      <p><button type="button" class="btn btn-default disabled">Review Completed</button></a></p>
+                    </c:otherwise>
                   </c:choose>
                 </c:if>
               </div>
@@ -114,15 +109,18 @@
                       <p><button type="button" class="btn btn-default disabled">In Review</button></p>
                     </c:when>
                     <c:when test="${application.status eq 'REVIEWED'}">
-                      <p><a href="<c:url value="/applications/${application._appId}" />">
+                      <p><a href="<c:url value="/applications/${application._appId}/reviews" />">
                         <button type="button" class="btn btn-default">Review Completed</button>
                       </a></p>
                     </c:when>
-                    <c:when test="${application.status eq 'RECEIVED_INVITATION'}">
+                    <c:when test="${application.status eq 'SHORTLISTED'}">
+                      <p><button type="button" class="btn btn-default disabled">Shortlisted</button></p>
                     </c:when>
                     <c:when test="${application.status eq 'FINALISED'}">
+                      <p><button type="button" class="btn btn-default disabled">Finalised</button></p>
                     </c:when>
                     <c:when test="${application.status eq 'ARCHIVED'}">
+                      <p><button type="button" class="btn btn-default disabled">Archived</button></p>
                     </c:when>
                   </c:choose>
                 </c:if>
@@ -136,17 +134,9 @@
                         <button type="button" class="btn btn-default">Review</button>
                       </a></p>
                     </c:when>
-                    <c:when test="${application.status eq 'REVIEWED'}">
-                      <p><a href="<c:url value="/applications/${application._appId}" />">
-                        <button type="button" class="btn btn-default">Review Completed</button>
-                      </a></p>
-                    </c:when>
-                    <c:when test="${application.status eq 'RECEIVED_INVITATION'}">
-                    </c:when>
-                    <c:when test="${application.status eq 'FINALISED'}">
-                    </c:when>
-                    <c:when test="${application.status eq 'ARCHIVED'}">
-                    </c:when>
+                    <c:otherwise>
+                      <p><button type="button" class="btn btn-default disabled">Review Completed</button></a></p>
+                    </c:otherwise>
                   </c:choose>
                 </c:if>
               </div>

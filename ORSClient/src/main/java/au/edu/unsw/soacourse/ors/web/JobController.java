@@ -2,6 +2,7 @@ package au.edu.unsw.soacourse.ors.web;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -20,8 +21,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import au.edu.unsw.soacourse.ors.beans.*;
 import au.edu.unsw.soacourse.ors.common.ApplicationStatus;
 import au.edu.unsw.soacourse.ors.common.RecruitmentStatus;
+import au.edu.unsw.soacourse.ors.common.ReviewDecision;
 import au.edu.unsw.soacourse.ors.dao.ApplicationsDao;
 import au.edu.unsw.soacourse.ors.dao.JobsDao;
+import au.edu.unsw.soacourse.ors.dao.ReviewsDao;
 import au.edu.unsw.soacourse.ors.dao.UsersDao;
 
 @Controller
@@ -100,6 +103,15 @@ public class JobController {
 			List<Job> list;
 			if (user != null && user.getRole().equals("manager")) {
 				list = JobsDao.instance.getAll(ORSKEY, user.getShortKey().toString());
+				// if all applications of a job are reviewed, proceed to next recruitment stage
+				List<Job> processedJobs = new ArrayList<Job>();
+				for (Job item : list) {
+					if (ApplicationsDao.instance.allReviewed(ORSKEY, user.getShortKey(), item.get_jobId())) {
+						processedJobs.add(item);
+					}
+				}
+				list.removeAll(processedJobs);
+				model.addAttribute("processedJobs", processedJobs);
 			} else if (user != null && user.getRole().equals("reviewer")) {
 				list = JobsDao.instance.getAssignedJobs(ORSKEY, user.getShortKey(), user.getDepartment());
 			} else {
@@ -120,6 +132,95 @@ public class JobController {
 			Job j = JobsDao.instance.getById(id);
 			model.addAttribute("job", j);
 			return "jobDetails";
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMsg", e.getMessage());
+			return "error";
+		}
+	}
+	
+	@RequestMapping(value="/jobs/{jobId}/shortlist", method={RequestMethod.GET})
+	public String visitShortlistPage(@PathVariable String jobId, HttpServletRequest request, ModelMap model) {
+		User user = (User) request.getSession().getAttribute("user");
+		if (user == null || !user.getRole().equals("manager")) {
+			model.addAttribute("errorMsg", "User has no permission");
+			return "login";
+		}
+		try {
+			Job j = JobsDao.instance.getById(jobId);
+			if (j.getStatus().equals(RecruitmentStatus.CREATED)) {
+				return "redirect:/jobs";
+			}
+			List<Application> applications = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), jobId);
+			for (Application a : applications) {
+				if (ApplicationsDao.instance.isShortlistedByAllReviewers(ORSKEY, user.getShortKey(), a.get_appId())) {
+					a.setStatus(ApplicationStatus.SHORTLISTED);
+				}
+			}
+			model.addAttribute("applications", applications);
+			model.addAttribute("job", j);
+			return "shortlist";
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMsg", e.getMessage());
+			return "error";
+		}
+	}
+	
+	@RequestMapping(value="/jobs/{jobId}/shortlist", method={RequestMethod.POST})
+	public String submitShortlist(@PathVariable String jobId, HttpServletRequest request, ModelMap model) {
+		User user = (User) request.getSession().getAttribute("user");
+		if (user == null || !user.getRole().equals("manager")) {
+			model.addAttribute("errorMsg", "User has no permission");
+			return "login";
+		}
+		try {
+			Job j = JobsDao.instance.getById(jobId);
+			if (!j.getStatus().equals(RecruitmentStatus.IN_REVIEW)) {
+				return "redirect:/jobs";
+			}
+			List<Application> applications = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), jobId);
+			for (Application a : applications) {
+				if (request.getParameter(a.get_appId()) != null) {
+					a.setStatus(ApplicationStatus.SHORTLISTED);
+					// TODO send invitations
+				} else {
+					a.setStatus(ApplicationStatus.FINALISED);
+					// TODO send notifications
+				}
+				ApplicationsDao.instance.update(a);
+			}
+			j.setStatus(RecruitmentStatus.SENT_INVITATIONS);
+			JobsDao.instance.update(ORSKEY, user.getShortKey(), j);
+			return "redirect:/jobs";
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMsg", e.getMessage());
+			return "error";
+		}
+	}
+	
+	@RequestMapping("/jobs/{jobId}/sendInvitations")
+	public String sendInvitations(@PathVariable String jobId, HttpServletRequest request, ModelMap model) {
+		User user = (User) request.getSession().getAttribute("user");
+		if (user == null || !user.getRole().equals("manager")) {
+			model.addAttribute("errorMsg", "User has no permission");
+			return "login";
+		}
+		try {
+			Job j = JobsDao.instance.getById(jobId);
+			if (!j.getStatus().equals(RecruitmentStatus.PROCESSED)) {
+				return "redirect:/jobs";
+			}
+			List<Application> applications = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), jobId);
+			for (Application a : applications) {
+				if (a.getStatus().equals(ApplicationStatus.SHORTLISTED)) {
+					// TODO send invitation
+				}
+			}
+			j.setStatus(RecruitmentStatus.SENT_INVITATIONS);
+			JobsDao.instance.update(ORSKEY, user.getShortKey(), j);
+			return "redirect:/jobs";
 		} catch (Exception e) {
 			e.printStackTrace();
 			model.addAttribute("errorMsg", e.getMessage());
