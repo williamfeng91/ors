@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<definitions name="AutoCheck"
+        targetNamespace="http://soacourse.unsw.edu.au/autocheck"
+        xmlns:tns="http://soacourse.unsw.edu.au/autocheck"
+        xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype"
+        xmlns="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:pdvChecker="http://pdv.soacourse.unsw.edu.au"
+        xmlns:crvChecker="http://crv.soacourse.unsw.edu.au"
+        >
+        
+        <import namespace="http://pdv.soacourse.unsw.edu.au"
+            location="PDVCheckService.wsdl" />
+        <import namespace="http://crv.soacourse.unsw.edu.au"
+            location="CRVCheckService.wsdl" />
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     PARTNER LINK TYPE DEFINITION
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->      
+    <plnk:partnerLinkType name="AutoCheckLinkType">
+        <plnk:role name="checker" portType="pdvChecker:PDVCheckService"/>
+    </plnk:partnerLinkType>   
+    <plnk:partnerLinkType name="PDVCheckLinkType">
+        <plnk:role name="pdvChecker" portType="pdvChecker:PDVCheckService"/>
+    </plnk:partnerLinkType>   
+    <plnk:partnerLinkType name="CRVCheckLinkType">
+        <plnk:role name="crvChecker" portType="crvChecker:CRVCheckService"/>
+    </plnk:partnerLinkType>
+    
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     BINDING DEFINITION - Defines the message format and protocol details
+     for a web service.
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <wsdl:binding name="AutoCheckServiceBinding" type="tns:AutoCheckService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="check">
+      <soap:operation soapAction="http://soacourse.unsw.edu.au/autocheck/check" style="document"/>
+      <wsdl:input name="check">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="checkResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="checkFaultMsg">
+        <soap:fault name="checkFaultMsg" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+    <binding name="PDVCheckServiceBinding" type="pdvChecker:PDVCheckService">
+    	<soap:binding style="document"
+    		transport="http://schemas.xmlsoap.org/soap/http" />
+    	<operation name="PDVCheck">
+    		<soap:operation
+    			soapAction="http://soacourse.unsw.edu.au/PDVCheck/PDVCheck" />
+    		<input>
+    			<soap:body use="literal" />
+    		</input>
+    		<output>
+    			<soap:body use="literal" />
+    		</output>
+    	</operation>
+    </binding>
+    <binding name="CRVCheckServiceBinding" type="crvChecker:CRVCheckService">
+        <soap:binding style="document"
+            transport="http://schemas.xmlsoap.org/soap/http" />
+        <operation name="CRVCheck">
+            <soap:operation
+                soapAction="http://soacourse.unsw.edu.au/CRVCheck/CRVCheck" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+        </operation>
+    </binding>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     SERVICE DEFINITION - A service groups a set of ports into
+     a service unit.
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <service name="AutoCheckServiceProcess">
+    	<port name="AutoCheckProcessPort" binding="tns:PDVCheckServiceBinding">
+    		<soap:address location="http://localhost:6060/ode/processes/AutoCheckServiceProcess" />
+    	</port>
+    </service>
+</definitions>

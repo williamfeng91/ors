@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://pdv.soacourse.unsw.edu.au" name="PDVCheckService" targetNamespace="http://pdv.soacourse.unsw.edu.au">
+  <wsdl:types>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://pdv.soacourse.unsw.edu.au" targetNamespace="http://pdv.soacourse.unsw.edu.au" version="1.0" elementFormDefault="qualified">
+
+  <xs:element name="PDVCheckFault">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="faultType" type="xs:string"/>
+        <xs:element name="faultMessage" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="PDVCheckRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="licenseNo" type="xs:string"/>
+        <xs:element name="fullName" type="xs:string"/>
+        <xs:element name="postcode" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="PDVCheckResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="message" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:simpleType name="PDVCheckFaultType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="InvalidLicenseNo"/>
+      <xs:enumeration value="InvalidFullName"/>
+      <xs:enumeration value="InvalidPostcode"/>
+      <xs:enumeration value="ProgramError"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="PDVCheckFaultMsg">
+    <wsdl:part element="ns1:PDVCheckFault" name="PDVCheckFaultMsg">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PDVCheckResponse">
+    <wsdl:part element="ns1:PDVCheckResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PDVCheck">
+    <wsdl:part element="ns1:PDVCheckRequest" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="PDVCheckService">
+    <wsdl:operation name="PDVCheck">
+      <wsdl:input message="ns1:PDVCheck" name="PDVCheck">
+    </wsdl:input>
+      <wsdl:output message="ns1:PDVCheckResponse" name="PDVCheckResponse">
+    </wsdl:output>
+      <wsdl:fault message="ns1:PDVCheckFaultMsg" name="PDVCheckFaultMsg">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>

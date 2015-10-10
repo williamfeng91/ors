@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://pdv.soacourse.unsw.edu.au/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="http://pdv.soacourse.unsw.edu.au" name="PDVCheckServiceImplService" targetNamespace="http://pdv.soacourse.unsw.edu.au/">
+  <wsdl:import location="PDVCheckService.wsdl" namespace="http://pdv.soacourse.unsw.edu.au">
+    </wsdl:import>
+  <wsdl:binding name="PDVCheckServiceImplServiceSoapBinding" type="ns1:PDVCheckService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="PDVCheck">
+      <soap:operation soapAction="http://pdv.soacourse.unsw.edu.au/PDVCheck" style="document"/>
+      <wsdl:input name="PDVCheck">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="PDVCheckResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="PDVCheckFaultMsg">
+        <soap:fault name="PDVCheckFaultMsg" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="PDVCheckServiceImplService">
+    <wsdl:port binding="tns:PDVCheckServiceImplServiceSoapBinding" name="PDVCheckServiceImplPort">
+      <soap:address location="http://localhost:8080/PDVCheck/PDVCheck"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

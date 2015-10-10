@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://crv.soacourse.unsw.edu.au/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="http://crv.soacourse.unsw.edu.au" name="CRVCheckServiceImplService" targetNamespace="http://crv.soacourse.unsw.edu.au/">
+  <wsdl:import location="CRVCheckService.wsdl" namespace="http://crv.soacourse.unsw.edu.au">
+    </wsdl:import>
+  <wsdl:binding name="CRVCheckServiceImplServiceSoapBinding" type="ns1:CRVCheckService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="CRVCheck">
+      <soap:operation soapAction="http://crv.soacourse.unsw.edu.au/CRVCheck" style="document"/>
+      <wsdl:input name="CRVCheck">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="CRVCheckResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CRVCheckFaultMsg">
+        <soap:fault name="CRVCheckFaultMsg" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="CRVCheckServiceImplService">
+    <wsdl:port binding="tns:CRVCheckServiceImplServiceSoapBinding" name="CRVCheckServiceImplPort">
+      <soap:address location="http://localhost:8080/CRVCheck/CRVCheck"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://crv.soacourse.unsw.edu.au" name="CRVCheckService" targetNamespace="http://crv.soacourse.unsw.edu.au">
+  <wsdl:types>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://crv.soacourse.unsw.edu.au" targetNamespace="http://crv.soacourse.unsw.edu.au" version="1.0" elementFormDefault="qualified">
+
+  <xs:element name="CRVCheckFault">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="faultType" type="xs:string"/>
+        <xs:element name="faultMessage" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="CRVCheckRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="licenseNo" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="CRVCheckResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="message" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:simpleType name="CRVCheckFaultType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="InvalidLicenseNo"/>
+      <xs:enumeration value="ProgramError"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="CRVCheckResponse">
+    <wsdl:part element="ns1:CRVCheckResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CRVCheck">
+    <wsdl:part element="ns1:CRVCheckRequest" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CRVCheckFaultMsg">
+    <wsdl:part element="ns1:CRVCheckFault" name="CRVCheckFaultMsg">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="CRVCheckService">
+    <wsdl:operation name="CRVCheck">
+      <wsdl:input message="ns1:CRVCheck" name="CRVCheck">
+    </wsdl:input>
+      <wsdl:output message="ns1:CRVCheckResponse" name="CRVCheckResponse">
+    </wsdl:output>
+      <wsdl:fault message="ns1:CRVCheckFaultMsg" name="CRVCheckFaultMsg">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>
