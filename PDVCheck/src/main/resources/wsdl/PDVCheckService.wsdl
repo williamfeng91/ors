@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://pdv.soacourse.unsw.edu.au" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="PDVSimpleService" targetNamespace="http://pdv.soacourse.unsw.edu.au">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://pdv.soacourse.unsw.edu.au">
+       <xsd:element name="PDVCheckRequest">
+      	<xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="licenseNo" nillable="false" type="xsd:string"/>
+            <xsd:element name="fullName" nillable="false" type="xsd:string"/>
+            <xsd:element name="postcode" nillable="false" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+       </xsd:element>
+       <xsd:element name="PDVCheckResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="message" nillable="false" type="xsd:string"/>
+          </xsd:sequence>
+        </xsd:complexType>
+       </xsd:element>
+       <xsd:simpleType name="PDVCheckFaultType">
+         <xsd:restriction base="xsd:string">
+           <xsd:enumeration value="InvalidLicenseNo"/>
+           <xsd:enumeration value="InvalidFullName"/>
+           <xsd:enumeration value="InvalidPostcode"/>
+           <xsd:enumeration value="ProgramError"/>
+         </xsd:restriction>
+       </xsd:simpleType>
+       <xsd:element name="PDVCheckFault">
+         <xsd:complexType>
+           <xsd:sequence>
+             <xsd:element name="faultType" nillable="false" type="tns:PDVCheckFaultType"></xsd:element>
+             <xsd:element name="faultMessage" nillable="false" type="xsd:string"></xsd:element>
+           </xsd:sequence>
+         </xsd:complexType>
+       </xsd:element>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="PDVCheckRequestMsg">
+    <wsdl:part name="parameters" element="tns:PDVCheckRequest" />
+  </wsdl:message>
+  <wsdl:message name="PDVCheckResponseMsg">
+    <wsdl:part name="parameters" element="tns:PDVCheckResponse" />
+  </wsdl:message>
+  <wsdl:message name="PDVCheckFaultMsg">
+    <wsdl:part name="parameters" element="tns:PDVCheckFault" />
+  </wsdl:message>
+  <wsdl:portType name="PDVCheckService">
+    <wsdl:operation name="PDVCheck">
+      <wsdl:input message="tns:PDVCheckRequestMsg"/>
+      <wsdl:output message="tns:PDVCheckResponseMsg"/>
+      <wsdl:fault name="pdvFault" message="tns:PDVCheckFaultMsg"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="PDVCheckServiceSOAP" type="tns:PDVCheckService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="PDVCheck">
+      <soap:operation soapAction="http://pdv.soacourse.unsw.edu.au/PDVCheck"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="pdvFault">
+        <soap:fault name="pdvFault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="PDVCheckService">
+    <wsdl:port binding="tns:PDVCheckServiceSOAP" name="PDVCheckServiceSOAP">
+      <soap:address location="http://localhost:8080/ORS/PDVCheckService"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
