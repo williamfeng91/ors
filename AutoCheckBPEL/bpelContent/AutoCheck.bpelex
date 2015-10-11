@@ -14,7 +14,7 @@
   </extensions>
   <extensions>
     <extendedObject href="AutoCheck.bpel#/"/>
-    <extensionObject xsi:type="org.eclipse.bpel.ui.uiextensionmodel:ProcessExtension" modificationStamp="1444541454000"/>
+    <extensionObject xsi:type="org.eclipse.bpel.ui.uiextensionmodel:ProcessExtension" modificationStamp="1444557984000"/>
   </extensions>
   <extensions>
     <extendedObject href="AutoCheck.bpel#//@activity/@activities.3"/>
@@ -65,11 +65,11 @@
     <extensionObject xsi:type="org.eclipse.bpel.ui.uiextensionmodel:ActivityExtension"/>
   </extensions>
   <extensions>
-    <extendedObject href="AutoCheck.bpel#//@variables/@children.5"/>
+    <extendedObject href="AutoCheck.bpel#//@variables/@children.4"/>
     <extensionObject xsi:type="org.eclipse.bpel.ui.uiextensionmodel:VariableExtension"/>
   </extensions>
   <extensions>
-    <extendedObject href="AutoCheck.bpel#//@variables/@children.6"/>
+    <extendedObject href="AutoCheck.bpel#//@variables/@children.5"/>
     <extensionObject xsi:type="org.eclipse.bpel.ui.uiextensionmodel:VariableExtension"/>
   </extensions>
   <extensions>
@@ -103,13 +103,5 @@
   <extensions>
     <extendedObject href="AutoCheck.bpel#//@activity/@activities.2"/>
     <extensionObject xsi:type="org.eclipse.bpel.ui.uiextensionmodel:ActivityExtension"/>
-  </extensions>
-  <extensions>
-    <extendedObject href="AutoCheck.bpel#//@variables/@children.4"/>
-    <extensionObject xsi:type="org.eclipse.bpel.ui.uiextensionmodel:VariableExtension"/>
-  </extensions>
-  <extensions>
-    <extendedObject href="AutoCheck.bpel#//@variables/@children.7"/>
-    <extensionObject xsi:type="org.eclipse.bpel.ui.uiextensionmodel:VariableExtension"/>
   </extensions>
 </extensionmodel:ExtensionMap>

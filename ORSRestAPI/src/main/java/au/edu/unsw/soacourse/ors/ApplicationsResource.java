@@ -40,19 +40,23 @@ public class ApplicationsResource {
 	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 	public Response newApplication(
 			@FormParam("_jobId") String _jobId,
-			@FormParam("name") String name,
+			@FormParam("licenseNo") String licenseNo,
+			@FormParam("fullName") String fullName,
+			@FormParam("postcode") String postcode,
 			@FormParam("cv") String cv,
 			@FormParam("resume") String resume,
 			@FormParam("status") String status
 	) {
-		if (!validateInput(_jobId, name, cv, resume, status)) {
+		if (!validateInput(_jobId, licenseNo, fullName, postcode, cv, resume, status)) {
 			throw new BadRequestException("Invalid form parameters");
 		}
 		String id = UUID.randomUUID().toString();
 		Application a = new Application();
 		a.set_appId(id);
 		a.set_jobId(_jobId);
-		a.setName(name);
+		a.setLicenseNo(licenseNo);
+		a.setFullName(fullName);
+		a.setPostcode(postcode);
 		a.setCv(cv);
 		a.setResume(resume);
 		a.setStatus(ApplicationStatus.valueOf(status));
@@ -119,7 +123,9 @@ public class ApplicationsResource {
 	
     private boolean validateInput(
     		String _jobId,
-    		String name,
+    		String licenseNo,
+    		String fullName,
+    		String postcode,
     		String cv,
     		String resume,
     		String status) {
@@ -131,7 +137,13 @@ public class ApplicationsResource {
 		} catch (NotFoundException e) {
 			return false;
 		}
-    	if (name == null || name.isEmpty()) {
+    	if (licenseNo == null || licenseNo.isEmpty()) {
+    		return false;
+    	}
+    	if (fullName == null || fullName.isEmpty()) {
+    		return false;
+    	}
+    	if (postcode == null || postcode.isEmpty()) {
     		return false;
     	}
     	if (cv == null || cv.isEmpty()) {

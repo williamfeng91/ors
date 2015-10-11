@@ -4,7 +4,7 @@
   <div class="container">
     
     <hgroup class="mb20">
-      <center><h1>Application Details</h1></center>
+      <h1>Application Details</h1>
       <c:choose>
         <c:when test="${not empty errorMsg}" >
           <h2 class="lead error-msg">${errorMsg}</h2>
@@ -33,8 +33,16 @@
         <td><c:out value="${application.status}"/></td>
       </tr>
       <tr>
-        <td>Name</td>
-        <td><c:out value="${application.name}"/></td>
+        <td>License Number</td>
+        <td><c:out value="${application.licenseNo}"/></td>
+      </tr>
+      <tr>
+        <td>Full Name</td>
+        <td><c:out value="${application.fullName}"/></td>
+      </tr>
+      <tr>
+        <td>Postcode</td>
+        <td><c:out value="${application.postcode}"/></td>
       </tr>
       <tr>
         <td>CV</td>

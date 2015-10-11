@@ -59,7 +59,7 @@
                         </c:when>
                         <c:otherwise>
 		                  <p><a href="<c:url value="/jobs/${job._jobId}/startAutoChecks" />">
-		                    <button type="button" class="btn btn-default">Start Auto-check</button>
+		                    <button type="button" class="btn btn-default">Start Auto-checks</button>
 		                  </a></p>
 		                  <p><a href="<c:url value="/jobs/${job._jobId}/assignTeam" />">
 		                    <button type="button" class="btn btn-default">Assign Hiring Team</button>

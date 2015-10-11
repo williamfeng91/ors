@@ -27,7 +27,8 @@
          <element name="AutoCheckResponse">
             <complexType>
                <sequence>
-                  <element name="result" type="string"/>
+                  <element name="pdvResult" type="string"/>
+                  <element name="crvResult" type="string"/>
                </sequence>
             </complexType>
          </element>

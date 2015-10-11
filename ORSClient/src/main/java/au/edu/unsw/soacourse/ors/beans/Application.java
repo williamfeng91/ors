@@ -6,7 +6,9 @@ public class Application {
 
     private String _appId;
     private String _jobId;
-    private String name;
+    private String licenseNo;
+    private String fullName;
+    private String postcode;
     private String cv;
     private String resume;
     private ApplicationStatus status;
@@ -31,12 +33,28 @@ public class Application {
 		this._jobId = _jobId;
 	}
 
-	public String getName() {
-		return name;
+	public String getLicenseNo() {
+		return licenseNo;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setLicenseNo(String licenseNo) {
+		this.licenseNo = licenseNo;
+	}
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
+
+	public String getPostcode() {
+		return postcode;
+	}
+
+	public void setPostcode(String postcode) {
+		this.postcode = postcode;
 	}
 
 	public String getCv() {

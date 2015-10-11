@@ -52,14 +52,10 @@
                   messageType="pdv:PDVCheck"/>
         <bpel:variable name="pdvResponse"
                   messageType="pdv:PDVCheckResponse"/>
-        <bpel:variable name="pdvFault"
-                  messageType="pdv:PDVCheckFaultMsg"/>
         <bpel:variable name="crvRequest"
                   messageType="crv:CRVCheck"/>
         <bpel:variable name="crvResponse"
                   messageType="crv:CRVCheckResponse"/>
-        <bpel:variable name="crvFault"
-                  messageType="crv:CRVCheckFaultMsg"/>
     </bpel:variables>
 
     <!-- ================================================================= -->
@@ -165,22 +161,34 @@
                 <bpel:from>
                     <bpel:literal>
                         <tns:AutoCheckResponse>
-                            <tns:result>tns:result</tns:result>
+                            <tns:pdvResult>tns:pdvResult</tns:pdvResult>
+                            <tns:crvResult>tns:crvResult</tns:crvResult>
                         </tns:AutoCheckResponse>
                     </bpel:literal>
                 </bpel:from>
                 <bpel:to variable="response" part="parameters"></bpel:to>
             </bpel:copy>
             <bpel:copy>
-                <bpel:from>
-                    <![CDATA[concat('PDV result: ',
-                        bpel:getVariableData('pdvResponse', 'parameters'),
-                        '\nCRV result: ',
-                        bpel:getVariableData('crvResponse', 'parameters'))]]>
+                <bpel:from part="parameters" variable="pdvResponse">
+                    <bpel:query queryLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">
+                        <![CDATA[pdv:message]]>
+                    </bpel:query>
                 </bpel:from>
                 <bpel:to part="parameters" variable="response">
                     <bpel:query queryLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">
-                        <![CDATA[tns:result]]>
+                        <![CDATA[tns:pdvResult]]>
+                    </bpel:query>
+                </bpel:to>
+            </bpel:copy>
+            <bpel:copy>
+                <bpel:from part="parameters" variable="crvResponse">
+                    <bpel:query queryLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">
+                        <![CDATA[crv:message]]>
+                    </bpel:query>
+                </bpel:from>
+                <bpel:to part="parameters" variable="response">
+                    <bpel:query queryLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">
+                        <![CDATA[tns:crvResult]]>
                     </bpel:query>
                 </bpel:to>
             </bpel:copy>
@@ -190,7 +198,6 @@
                portType="tns:AutoCheckService"
                operation="check"
                variable="response"
-               fault="tns:AutoCheckFaultMessage"
                />
     </bpel:sequence>
 </bpel:process>

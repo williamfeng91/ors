@@ -4,7 +4,7 @@
   <div class="container">
     
     <hgroup class="mb20">
-      <center><h1>Update Application</h1></center>
+      <h1>Update Application</h1>
       <c:choose>
         <c:when test="${not empty errorMsg}" >
           <h2 class="lead error-msg">${errorMsg}</h2>
@@ -28,8 +28,20 @@
       </div>
       <div class="row">
         <div class="form-group col-xs-12 col-sm-12 col-md-8">
-          <label for="name">Name</label>
-          <textarea class="form-control" rows="10" name="name" maxLength="1000" required>${application.name}</textarea>
+          <label for="licenseNo">License Number</label>
+          <input type="text" class="form-control" name="licenseNo" value="${application.licenseNo}" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-xs-12 col-sm-12 col-md-8">
+          <label for="fullName">Full Name</label>
+          <input type="text" class="form-control" name="fullName" value="${application.fullName}" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-xs-12 col-sm-12 col-md-8">
+          <label for="postcode">Postcode</label>
+          <input type="text" class="form-control" name="postcode" value="${application.postcode}" />
         </div>
       </div>
       <div class="row">

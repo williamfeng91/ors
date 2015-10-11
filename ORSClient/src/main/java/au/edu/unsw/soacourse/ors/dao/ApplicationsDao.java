@@ -32,7 +32,9 @@ public enum ApplicationsDao {
 
     public Application create(
     		String _jobId,
-    		String name,
+    		String licenseNo,
+    		String fullName,
+    		String postcode,
     		String cv,
     		String resume,
     		String status) {
@@ -40,7 +42,9 @@ public enum ApplicationsDao {
     	Response r = client.path("/applications")
     		.accept(MediaType.APPLICATION_JSON)
     		.form(new Form().param("_jobId", _jobId)
-    				.param("name", name)
+    				.param("licenseNo", licenseNo)
+    				.param("fullName", fullName)
+    				.param("postcode", postcode)
     				.param("cv", cv)
     				.param("resume", resume)
     				.param("status", status));

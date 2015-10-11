@@ -28,10 +28,10 @@
 	</bean>
 
 	<!-- CXF JAX-WS Client bean definition. -->
-	<!-- <jaxws:client id="loanApprovalServiceProcess"
-		address="http://localhost:6060/ode/processes/LoanApprovalServiceProcess"
-		serviceClass="au.edu.unsw.soacourse.loanapproval.LoanApprovalServiceProcessPortType">
-	</jaxws:client> -->
+	<jaxws:client id="loanApprovalServiceProcess"
+		address="http://localhost:6060/ode/processes/AutoCheckServiceProcess"
+		serviceClass="au.edu.unsw.soacourse.autocheck.AutoCheckServiceProcessPortType">
+	</jaxws:client>
 
 
 </beans>

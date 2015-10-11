@@ -32,14 +32,23 @@
                 </ul>
               </div>
               <div class="col-xs-12 col-sm-12 col-md-5 left-col">
-                <h3><a href="<c:url value="/applications/${application._appId}" />" title="">${application.name}</a></h3>
+                <h3><a href="<c:url value="/applications/${application._appId}" />" title="">${application.fullName}</a></h3>
                 <p>Status: ${application.status}</p>
               </div>
               <div class="col-xs-12 col-sm-12 col-md-2 right-most">
                 <c:if test="${not empty user && user.role eq 'manager'}">
                   <c:choose>
                     <c:when test="${application.status eq 'CREATED'}">
-                      <p><button type="button" class="btn btn-default disabled">Review Not Started</button></p>
+                      <c:choose>
+                        <c:when test="${job.closingDate lt today}">
+                          <p><a href="<c:url value="/applications/${application._appId}/doAutoCheck" />">
+                            <button type="button" class="btn btn-default">Start Auto-check</button>
+                          </a></p>
+                        </c:when>
+                        <c:otherwise>
+                          <p><button type="button" class="btn btn-default disabled">Review Not Started</button></p>
+                        </c:otherwise>
+                      </c:choose>
                     </c:when>
                     <c:when test="${application.status eq 'IN_REVIEW'}">
                       <p><button type="button" class="btn btn-default disabled">In Review</button></p>

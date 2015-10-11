@@ -28,8 +28,20 @@
       </div>
       <div class="row">
         <div class="form-group col-xs-12 col-sm-12 col-md-8">
-          <label for="name">Name</label>
-          <input type="text" class="form-control" name="name" value="${application.name}" />
+          <label for="licenseNo">License Number</label>
+          <input type="text" class="form-control" name="licenseNo" value="${application.licenseNo}" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-xs-12 col-sm-12 col-md-8">
+          <label for="fullName">Full Name</label>
+          <input type="text" class="form-control" name="fullName" value="${application.fullName}" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-xs-12 col-sm-12 col-md-8">
+          <label for="postcode">Postcode</label>
+          <input type="text" class="form-control" name="postcode" value="${application.postcode}" />
         </div>
       </div>
       <div class="row">
