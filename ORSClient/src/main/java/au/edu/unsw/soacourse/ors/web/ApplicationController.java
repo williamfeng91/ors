@@ -48,6 +48,8 @@ public class ApplicationController {
 		a.setCv(cv);
 		a.setResume(resume);
 		if (!validateInput(_jobId, name, cv, resume)) {
+			Job j = JobsDao.instance.getById(_jobId);
+			model.addAttribute("job", j);
 			model.addAttribute("errorMsg", "Invalid form data");
 			model.addAttribute("application", a);
 			return "addApplication";

@@ -10,17 +10,17 @@
          >
 
     <!-- Import the client WSDL -->
-	<bpel:import location="AutoCheckArtifacts.wsdl" namespace="http://soacourse.unsw.edu.au/autocheck" 
+	<bpel:import location="AutoCheckArtifacts.wsdl" namespace="http://soacourse.unsw.edu.au/autocheck"
 	        importType="http://schemas.xmlsoap.org/wsdl/" />
     <bpel:import location="PDVCheckService.wsdl" namespace="http://pdv.soacourse.unsw.edu.au"
             importType="http://schemas.xmlsoap.org/wsdl/" />
     <bpel:import location="CRVCheckService.wsdl" namespace="http://crv.soacourse.unsw.edu.au"
             importType="http://schemas.xmlsoap.org/wsdl/" />
-         
-    <!-- ================================================================= -->         
+
+    <!-- ================================================================= -->
     <!-- PARTNERLINKS                                                      -->
     <!-- List of services participating in this BPEL process               -->
-    <!-- ================================================================= -->         
+    <!-- ================================================================= -->
     <bpel:partnerLinks>
         <!-- The 'client' role represents the requester of this service. -->
         <bpel:partnerLink name="client"
@@ -38,11 +38,11 @@
                      initializePartnerRole="yes"
                      />
     </bpel:partnerLinks>
-  
-    <!-- ================================================================= -->         
+
+    <!-- ================================================================= -->
     <!-- VARIABLES                                                         -->
     <!-- List of messages and XML documents used within this BPEL process  -->
-    <!-- ================================================================= -->         
+    <!-- ================================================================= -->
     <bpel:variables>
         <bpel:variable name="request"
                   messageType="tns:AutoCheckRequestMessage"/>
@@ -52,21 +52,25 @@
                   messageType="pdv:PDVCheck"/>
         <bpel:variable name="pdvResponse"
                   messageType="pdv:PDVCheckResponse"/>
+        <bpel:variable name="pdvFault"
+                  messageType="pdv:PDVCheckFaultMsg"/>
         <bpel:variable name="crvRequest"
                   messageType="crv:CRVCheck"/>
         <bpel:variable name="crvResponse"
                   messageType="crv:CRVCheckResponse"/>
+        <bpel:variable name="crvFault"
+                  messageType="crv:CRVCheckFaultMsg"/>
     </bpel:variables>
 
-    <!-- ================================================================= -->         
+    <!-- ================================================================= -->
     <!-- ORCHESTRATION LOGIC                                               -->
     <!-- Set of activities coordinating the flow of messages across the    -->
     <!-- services integrated within this business process                  -->
-    <!-- ================================================================= -->         
+    <!-- ================================================================= -->
     <bpel:sequence name="main">
-        
-        <!-- Receive input from requester. 
-             Note: This maps to operation defined in AutoCheck.wsdl 
+
+        <!-- Receive input from requester.
+             Note: This maps to operation defined in AutoCheck.wsdl
              -->
         <bpel:receive name="receiveInput" partnerLink="client"
                  portType="tns:AutoCheckService"
@@ -156,36 +160,37 @@
                 </bpel:invoke>
             </bpel:sequence>
         </bpel:flow>
-                <bpel:assign validate="no" name="Assign1">
-                    <bpel:copy>
-                        <bpel:from>
-                            <bpel:literal>
-                                <tns:AutoCheckResponse>
-                                    <tns:result>tns:result</tns:result>
-                                </tns:AutoCheckResponse>
-                            </bpel:literal>
-                        </bpel:from>
-                        <bpel:to variable="response" part="parameters"></bpel:to>
-                    </bpel:copy>
-                    <bpel:copy>
-                        <bpel:from>
-                            <![CDATA[concat('PDV result: ',
-                                bpel:getVariableData('pdvResponse', 'parameters'),
-                                '\nCRV result: ',
-                                bpel:getVariableData('crvResponse', 'parameters'))]]>
-                        </bpel:from>
-                        <bpel:to part="parameters" variable="response">
-                            <bpel:query queryLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">
-                                <![CDATA[tns:result]]>
-                            </bpel:query>
-                        </bpel:to>
-                    </bpel:copy>
-                </bpel:assign>
-        <bpel:reply name="replyOutput" 
+        <bpel:assign validate="no" name="Assign1">
+            <bpel:copy>
+                <bpel:from>
+                    <bpel:literal>
+                        <tns:AutoCheckResponse>
+                            <tns:result>tns:result</tns:result>
+                        </tns:AutoCheckResponse>
+                    </bpel:literal>
+                </bpel:from>
+                <bpel:to variable="response" part="parameters"></bpel:to>
+            </bpel:copy>
+            <bpel:copy>
+                <bpel:from>
+                    <![CDATA[concat('PDV result: ',
+                        bpel:getVariableData('pdvResponse', 'parameters'),
+                        '\nCRV result: ',
+                        bpel:getVariableData('crvResponse', 'parameters'))]]>
+                </bpel:from>
+                <bpel:to part="parameters" variable="response">
+                    <bpel:query queryLanguage="urn:oasis:names:tc:wsbpel:2.0:sublang:xpath1.0">
+                        <![CDATA[tns:result]]>
+                    </bpel:query>
+                </bpel:to>
+            </bpel:copy>
+        </bpel:assign>
+        <bpel:reply name="replyOutput"
                partnerLink="client"
                portType="tns:AutoCheckService"
-               operation="check" 
+               operation="check"
                variable="response"
+               fault="tns:AutoCheckFaultMessage"
                />
     </bpel:sequence>
 </bpel:process>

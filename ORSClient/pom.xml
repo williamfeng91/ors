@@ -83,21 +83,21 @@
                 <artifactId>cxf-codegen-plugin</artifactId>
                 <version>3.0.4</version>
                 <executions>
-                    <!-- <execution>
+                    <execution>
                         <id>generate-sources</id>
                         <phase>generate-sources</phase>
                         <configuration>
                             <sourceRoot>src/main/java-generated</sourceRoot>
                             <wsdlOptions>
                                 <wsdlOption>
-                                    <wsdl>http://localhost:6060/ode/processes/LoanApprovalServiceProcess?wsdl</wsdl>
+                                    <wsdl>src/main/resources/wsdl/AutoCheckServiceProcess.wsdl</wsdl>
                                 </wsdlOption>
                             </wsdlOptions>
                         </configuration>
                         <goals>
                             <goal>wsdl2java</goal>
                         </goals>
-                    </execution> -->
+                    </execution>
                 </executions>
             </plugin>
         </plugins>

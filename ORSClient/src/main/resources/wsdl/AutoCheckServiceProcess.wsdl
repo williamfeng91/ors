@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:plnk="http://docs.oasis-open.org/wsbpel/2.0/plnktype"
+                  xmlns:crv="http://crv.soacourse.unsw.edu.au"
+                  xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+                  xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+                  xmlns:tns="http://soacourse.unsw.edu.au/autocheck"
+                  xmlns:pdv="http://pdv.soacourse.unsw.edu.au"
+                  xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+                  targetNamespace="http://soacourse.unsw.edu.au/autocheck">
+   <wsdl:types>
+      <schema xmlns="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified"
+              elementFormDefault="qualified"
+              targetNamespace="http://soacourse.unsw.edu.au/autocheck">
+         <element name="AutoCheckRequest">
+            <complexType>
+               <sequence>
+                  <element name="licenseNo" type="string"/>
+                  <element name="fullName" type="string"/>
+                  <element name="postcode" type="string"/>
+               </sequence>
+            </complexType>
+         </element>
+         <element name="AutoCheckResponse">
+            <complexType>
+               <sequence>
+                  <element name="result" type="string"/>
+               </sequence>
+            </complexType>
+         </element>
+      </schema>
+      <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:ns1="http://pdv.soacourse.unsw.edu.au"
+                  xmlns:tns="http://pdv.soacourse.unsw.edu.au"
+                  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                  attributeFormDefault="unqualified"
+                  elementFormDefault="qualified"
+                  targetNamespace="http://pdv.soacourse.unsw.edu.au">
+         <xsd:element name="PDVCheckFault">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="faultType" type="xsd:string"/>
+                  <xsd:element name="faultMessage" type="xsd:string"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:element name="PDVCheckRequest">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="licenseNo" type="xsd:string"/>
+                  <xsd:element name="fullName" type="xsd:string"/>
+                  <xsd:element name="postcode" type="xsd:string"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:element name="PDVCheckResponse">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="message" type="xsd:string"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:simpleType name="PDVCheckFaultType">
+            <xsd:restriction base="xsd:string">
+               <xsd:enumeration value="InvalidLicenseNo"/>
+               <xsd:enumeration value="InvalidFullName"/>
+               <xsd:enumeration value="InvalidPostcode"/>
+               <xsd:enumeration value="ProgramError"/>
+            </xsd:restriction>
+         </xsd:simpleType>
+      </xsd:schema>
+      <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                  xmlns:ns1="http://crv.soacourse.unsw.edu.au"
+                  xmlns:tns="http://crv.soacourse.unsw.edu.au"
+                  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                  attributeFormDefault="unqualified"
+                  elementFormDefault="qualified"
+                  targetNamespace="http://crv.soacourse.unsw.edu.au">
+         <xsd:element name="CRVCheckFault">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="faultType" type="xsd:string"/>
+                  <xsd:element name="faultMessage" type="xsd:string"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:element name="CRVCheckRequest">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="licenseNo" type="xsd:string"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:element name="CRVCheckResponse">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="message" type="xsd:string"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:simpleType name="CRVCheckFaultType">
+            <xsd:restriction base="xsd:string">
+               <xsd:enumeration value="InvalidLicenseNo"/>
+               <xsd:enumeration value="ProgramError"/>
+            </xsd:restriction>
+         </xsd:simpleType>
+      </xsd:schema>
+   </wsdl:types>
+   <wsdl:message name="AutoCheckRequestMessage">
+      <wsdl:part name="parameters" element="tns:AutoCheckRequest"/>
+   </wsdl:message>
+   <wsdl:message name="AutoCheckResponseMessage">
+      <wsdl:part name="parameters" element="tns:AutoCheckResponse"/>
+   </wsdl:message>
+   <wsdl:portType name="AutoCheckServiceProcessPortType">
+      <wsdl:operation name="check">
+         <wsdl:input message="tns:AutoCheckRequestMessage"
+                     wsaw:Action="http://soacourse.unsw.edu.au/autocheck/check"/>
+         <wsdl:output message="tns:AutoCheckResponseMessage"
+                      wsaw:Action="http://soacourse.unsw.edu.au/autocheck/AutoCheckService/checkResponse"/>
+      </wsdl:operation>
+   </wsdl:portType>
+   <wsdl:binding name="AutoCheckBinding" type="tns:AutoCheckServiceProcessPortType">
+      <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+      <wsdl:operation name="check">
+         <soap:operation soapAction="http://soacourse.unsw.edu.au/autocheck/check" style="document"/>
+         <wsdl:input>
+            <soap:body use="literal"/>
+         </wsdl:input>
+         <wsdl:output>
+            <soap:body use="literal"/>
+         </wsdl:output>
+      </wsdl:operation>
+   </wsdl:binding>
+   <wsdl:service name="AutoCheckServiceProcess">
+      <wsdl:port name="AutoCheckPort" binding="tns:AutoCheckBinding">
+         <soap:address location="http://localhost:6060//AutoCheckServiceProcess.AutoCheckPort/"/>
+      </wsdl:port>
+   </wsdl:service>
+</wsdl:definitions>
