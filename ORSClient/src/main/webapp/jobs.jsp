@@ -6,6 +6,9 @@
     <hgroup class="mb20">
       <h1>Job Postings</h1>
       <c:choose>
+        <c:when test="${not empty successMsg}">
+          <h2 class="lead success-msg">${successMsg}</h2>
+        </c:when>
         <c:when test="${not empty errorMsg}">
           <h2 class="lead error-msg">${errorMsg}</h2>
         </c:when>
@@ -44,7 +47,7 @@
                 <p>Closing date: ${job.closingDate}</p>
                 <c:if test="${not empty user}">
                   <p>Status: ${job.status}</p>
-                  <c:if test="${job.status ne 'CREATED'}">
+                  <c:if test="${not empty job.assignedTeam}">
                     <p>Assigned Team: ${job.assignedTeam}</p>
                   </c:if>
                 </c:if>
@@ -58,14 +61,14 @@
                           <p><button type="button" class="btn btn-default disabled">Application Open</button></p>
                         </c:when>
                         <c:otherwise>
-		                  <p><a href="<c:url value="/jobs/${job._jobId}/startAutoChecks" />">
-		                    <button type="button" class="btn btn-default">Start Auto-checks</button>
-		                  </a></p>
-		                  <p><a href="<c:url value="/jobs/${job._jobId}/assignTeam" />">
-		                    <button type="button" class="btn btn-default">Assign Hiring Team</button>
-		                  </a></p>
-		                </c:otherwise>
-		              </c:choose>
+                          <p><a href="<c:url value="/jobs/${job._jobId}/startAutoChecks" />">
+                            <button type="button" class="btn btn-default">Start Auto-checks</button>
+                          </a></p>
+                          <p><a href="<c:url value="/jobs/${job._jobId}/assignTeam" />">
+                            <button type="button" class="btn btn-default <c:if test="${not empty job.assignedTeam}">disabled</c:if>">Assign Hiring Team</button>
+                          </a></p>
+                        </c:otherwise>
+                      </c:choose>
                     </c:when>
                     <c:when test="${job.status eq 'IN_REVIEW'}">
                       <p><a href="<c:url value="/jobs/${job._jobId}/applications" />">

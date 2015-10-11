@@ -10,6 +10,7 @@
             <bean class="au.edu.unsw.soacourse.ors.JobsResource"/>
             <bean class="au.edu.unsw.soacourse.ors.ApplicationsResource"/>
             <bean class="au.edu.unsw.soacourse.ors.ReviewsResource"/>
+            <bean class="au.edu.unsw.soacourse.ors.AutoCheckResultsResource"/>
             <bean class="au.edu.unsw.soacourse.ors.UsersResource"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>

@@ -1,6 +1,5 @@
 package au.edu.unsw.soacourse.ors.web;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +17,7 @@ import au.edu.unsw.soacourse.autocheck.AutoCheckServiceProcessPortType;
 import au.edu.unsw.soacourse.ors.beans.*;
 import au.edu.unsw.soacourse.ors.common.ApplicationStatus;
 import au.edu.unsw.soacourse.ors.dao.ApplicationsDao;
+import au.edu.unsw.soacourse.ors.dao.AutoCheckResultsDao;
 import au.edu.unsw.soacourse.ors.dao.JobsDao;
 import au.edu.unsw.soacourse.ors.dao.ReviewsDao;
 
@@ -144,7 +144,12 @@ public class ApplicationController {
 	}
 	
 	@RequestMapping(value="/applications/{appId}/doAutoCheck")
-	public String doAutoCheck(@PathVariable String appId, ModelMap model) {
+	public String doAutoCheck(@PathVariable String appId, HttpServletRequest request, ModelMap model) {
+		User user = (User) request.getSession().getAttribute("user");
+		if (user == null || !user.getRole().equals("manager")) {
+			model.addAttribute("errorMsg", "User has no permission");
+			return "login";
+		}
 		try {
 			Application a = ApplicationsDao.instance.getById(appId);
 			AutoCheckRequest req = new AutoCheckRequest();
@@ -152,8 +157,16 @@ public class ApplicationController {
 			req.setFullName(a.getFullName());
 			req.setPostcode(a.getPostcode());
 			AutoCheckResponse response = autoCheckService.check(req);
-			model.addAttribute("pdvResult", response.getPdvResult());
-			model.addAttribute("crvResult", response.getCrvResult());
+			String pdvResult = response.getPdvResult();
+			String crvResult = response.getCrvResult();
+			// save result to API
+			AutoCheckResult newAutoCheckResult = new AutoCheckResult();
+			newAutoCheckResult.set_appId(appId);
+			newAutoCheckResult.setPdvResult(pdvResult);
+			newAutoCheckResult.setCrvResult(crvResult);
+			AutoCheckResultsDao.instance.create(ORSKEY, user.getShortKey(), newAutoCheckResult);
+			model.addAttribute("pdvResult", pdvResult);
+			model.addAttribute("crvResult", crvResult);
 			model.addAttribute("application", a);
 			return "autoCheckResult";
 		} catch (Exception e) {

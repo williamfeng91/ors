@@ -56,8 +56,12 @@ public enum JobsDao {
 				Unmarshaller um = context.createUnmarshaller();
 				jl = (JobList) um.unmarshal(new FileReader(DATASOURCE));
 				list = jl.getJobList();
+				if (list == null) {
+					list = new ArrayList<Job>();
+				}
 	        }
 			list.add(newJob);
+			jl.setJobList(list);
 
 			// write to database
 			Marshaller m = context.createMarshaller();
@@ -89,12 +93,15 @@ public enum JobsDao {
 			Unmarshaller um = context.createUnmarshaller();
 			JobList jl = (JobList) um.unmarshal(new FileReader(DATASOURCE));
 			list = jl.getJobList();
+	    	if (list == null) {
+	    		list = new ArrayList<Job>();
+	    	}
+			return list;
 		} catch (JAXBException e) {
 			throw new InternalServerErrorException("Failed to connect to database");
 		} catch (FileNotFoundException e) {
 			throw new NotFoundException("Job posting list not found");
 		}
-		return list;
     }
 
     public List<Job> search(

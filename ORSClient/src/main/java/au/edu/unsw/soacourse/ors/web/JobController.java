@@ -13,17 +13,21 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import au.edu.unsw.soacourse.autocheck.AutoCheckRequest;
+import au.edu.unsw.soacourse.autocheck.AutoCheckResponse;
+import au.edu.unsw.soacourse.autocheck.AutoCheckServiceProcessPortType;
 import au.edu.unsw.soacourse.ors.beans.*;
 import au.edu.unsw.soacourse.ors.common.ApplicationStatus;
 import au.edu.unsw.soacourse.ors.common.RecruitmentStatus;
-import au.edu.unsw.soacourse.ors.common.ReviewDecision;
 import au.edu.unsw.soacourse.ors.dao.ApplicationsDao;
+import au.edu.unsw.soacourse.ors.dao.AutoCheckResultsDao;
 import au.edu.unsw.soacourse.ors.dao.JobsDao;
-import au.edu.unsw.soacourse.ors.dao.ReviewsDao;
 import au.edu.unsw.soacourse.ors.dao.UsersDao;
 
 @Controller
@@ -36,6 +40,9 @@ public class JobController {
 	
 	@Autowired
 	ServletContext context;
+	
+	@Autowired
+	private AutoCheckServiceProcessPortType autoCheckService;
 	
 	@PostConstruct
 	public void setUpUserDB() {
@@ -96,7 +103,10 @@ public class JobController {
 	}
 
 	@RequestMapping(value="/jobs", method={RequestMethod.GET})
-	public String visitJobListPage(HttpServletRequest request, ModelMap model) {
+	public String visitJobListPage(
+			@ModelAttribute("successMsg") final String successMsg,
+			HttpServletRequest request,
+			ModelMap model) {
 		User user = (User) request.getSession().getAttribute("user");
 		try {
 			List<Job> list;
@@ -114,6 +124,7 @@ public class JobController {
 				list = JobsDao.instance.getOpenJobs();
 			}
 			model.addAttribute("jobs", list);
+			model.addAttribute("successMsg", successMsg);
 		} catch (Exception e) {
 			e.printStackTrace();
 			model.addAttribute("errorMsg", e.getMessage());
@@ -128,6 +139,53 @@ public class JobController {
 			Job j = JobsDao.instance.getById(id);
 			model.addAttribute("job", j);
 			return "jobDetails";
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMsg", e.getMessage());
+			return "error";
+		}
+	}
+	
+	@RequestMapping(value="/jobs/{jobId}/startAutoChecks")
+	public String doAutoChecks(
+			@PathVariable String jobId,
+			HttpServletRequest request,
+			RedirectAttributes redirectAttrs,
+			ModelMap model) {
+		User user = (User) request.getSession().getAttribute("user");
+		if (user == null || !user.getRole().equals("manager")) {
+			model.addAttribute("errorMsg", "User has no permission");
+			return "login";
+		}
+		try {
+			List<Application> applications = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), jobId);
+			for (Application a : applications) {
+				AutoCheckRequest req = new AutoCheckRequest();
+				req.setLicenseNo(a.getLicenseNo());
+				req.setFullName(a.getFullName());
+				req.setPostcode(a.getPostcode());
+				AutoCheckResponse response = autoCheckService.check(req);
+				String pdvResult = response.getPdvResult();
+				String crvResult = response.getCrvResult();
+				// save result to API
+				AutoCheckResult newAutoCheckResult = new AutoCheckResult();
+				newAutoCheckResult.set_appId(a.get_appId());
+				newAutoCheckResult.setPdvResult(pdvResult);
+				newAutoCheckResult.setCrvResult(crvResult);
+				AutoCheckResultsDao.instance.create(ORSKEY, user.getShortKey(), newAutoCheckResult);
+			}
+			Job j = JobsDao.instance.getById(jobId);
+			if (j.getAssignedTeam() != null) {
+				j.setStatus(RecruitmentStatus.IN_REVIEW);
+				JobsDao.instance.update(ORSKEY, user.getShortKey(), j);
+				// update status for all applications of the job
+				for (Application a : applications) {
+					a.setStatus(ApplicationStatus.IN_REVIEW);
+					ApplicationsDao.instance.update(a);
+				}
+			}
+			redirectAttrs.addFlashAttribute("successMsg", "Auto-checks run successfully");
+			return "redirect:/jobs";
 		} catch (Exception e) {
 			e.printStackTrace();
 			model.addAttribute("errorMsg", e.getMessage());
@@ -442,8 +500,7 @@ public class JobController {
 			if (assignedTeam.isEmpty()) {
 				assignedTeam = null;
 			} else {	// if hiring team is assigned and auto-check is done, proceed to next recruitment stage
-				// TODO
-//				if (AutoChecksDao.allDone(id)) {
+				if (AutoCheckResultsDao.instance.allDone(ORSKEY, user.getShortKey(), id)) {
 					updatedJob.setStatus(RecruitmentStatus.IN_REVIEW);
 					// update status for all applications of the job
 					List<Application> applications = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), id);
@@ -451,7 +508,7 @@ public class JobController {
 						a.setStatus(ApplicationStatus.IN_REVIEW);
 						ApplicationsDao.instance.update(a);
 					}
-//				}
+				}
 			}
 			updatedJob.setAssignedTeam(assignedTeam);
 		}

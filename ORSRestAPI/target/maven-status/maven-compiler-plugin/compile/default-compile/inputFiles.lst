@@ -1,3 +1,4 @@
+/Users/williamfeng/Study/COMP9322/Assignment2/ORSRestAPI/src/main/java/au/edu/unsw/soacourse/ors/model/AutoCheckResult.java
 /Users/williamfeng/Study/COMP9322/Assignment2/ORSRestAPI/src/main/java/au/edu/unsw/soacourse/ors/model/ApplicationStatus.java
 /Users/williamfeng/Study/COMP9322/Assignment2/ORSRestAPI/src/main/java/au/edu/unsw/soacourse/ors/JobsResource.java
 /Users/williamfeng/Study/COMP9322/Assignment2/ORSRestAPI/src/main/java/au/edu/unsw/soacourse/ors/ApplicationsResource.java
@@ -5,10 +6,12 @@
 /Users/williamfeng/Study/COMP9322/Assignment2/ORSRestAPI/src/main/java/au/edu/unsw/soacourse/ors/dao/UsersDao.java
 /Users/williamfeng/Study/COMP9322/Assignment2/ORSRestAPI/src/main/java/au/edu/unsw/soacourse/ors/model/UserList.java
 /Users/williamfeng/Study/COMP9322/Assignment2/ORSRestAPI/src/main/java/au/edu/unsw/soacourse/ors/model/JobList.java
+/Users/williamfeng/Study/COMP9322/Assignment2/ORSRestAPI/src/main/java/au/edu/unsw/soacourse/ors/dao/AutoCheckResultsDao.java
 /Users/williamfeng/Study/COMP9322/Assignment2/ORSRestAPI/src/main/java/au/edu/unsw/soacourse/ors/model/RecruitmentStatus.java
 /Users/williamfeng/Study/COMP9322/Assignment2/ORSRestAPI/src/main/java/au/edu/unsw/soacourse/ors/model/ReviewList.java
 /Users/williamfeng/Study/COMP9322/Assignment2/ORSRestAPI/src/main/java/au/edu/unsw/soacourse/ors/model/ApplicationList.java
 /Users/williamfeng/Study/COMP9322/Assignment2/ORSRestAPI/src/main/java/au/edu/unsw/soacourse/ors/model/ErrorResponse.java
+/Users/williamfeng/Study/COMP9322/Assignment2/ORSRestAPI/src/main/java/au/edu/unsw/soacourse/ors/AutoCheckResultsResource.java
 /Users/williamfeng/Study/COMP9322/Assignment2/ORSRestAPI/src/main/java/au/edu/unsw/soacourse/ors/UsersResource.java
 /Users/williamfeng/Study/COMP9322/Assignment2/ORSRestAPI/src/main/java/au/edu/unsw/soacourse/ors/model/Review.java
 /Users/williamfeng/Study/COMP9322/Assignment2/ORSRestAPI/src/main/java/au/edu/unsw/soacourse/ors/dao/ApplicationsDao.java
@@ -19,3 +22,4 @@
 /Users/williamfeng/Study/COMP9322/Assignment2/ORSRestAPI/src/main/java/au/edu/unsw/soacourse/ors/ReviewsResource.java
 /Users/williamfeng/Study/COMP9322/Assignment2/ORSRestAPI/src/main/java/au/edu/unsw/soacourse/ors/dao/ReviewsDao.java
 /Users/williamfeng/Study/COMP9322/Assignment2/ORSRestAPI/src/main/java/au/edu/unsw/soacourse/ors/model/Job.java
+/Users/williamfeng/Study/COMP9322/Assignment2/ORSRestAPI/src/main/java/au/edu/unsw/soacourse/ors/model/AutoCheckResultList.java

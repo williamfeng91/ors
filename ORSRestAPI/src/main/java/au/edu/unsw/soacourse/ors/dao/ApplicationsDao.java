@@ -55,8 +55,12 @@ public enum ApplicationsDao {
 				Unmarshaller um = context.createUnmarshaller();
 				al = (ApplicationList) um.unmarshal(new FileReader(DATASOURCE));
 				list = al.getApplicationList();
+				if (list == null) {
+					list = new ArrayList<Application>();
+				}
 	        }
 			list.add(newApplication);
+			al.setApplicationList(list);
 			
 			// write to database
 			Marshaller m = context.createMarshaller();
@@ -99,12 +103,15 @@ public enum ApplicationsDao {
 			Unmarshaller um = context.createUnmarshaller();
 			ApplicationList al = (ApplicationList) um.unmarshal(new FileReader(DATASOURCE));
 			list = al.getApplicationList();
+	    	if (list == null) {
+	    		list = new ArrayList<Application>();
+	    	}
+			return list;
 		} catch (JAXBException e) {
 			throw new InternalServerErrorException("Failed to connect to database");
 		} catch (FileNotFoundException e) {
 			throw new NotFoundException("Application list not found");
 		}
-		return list;
     }
     
     public void update(Application updatedApplication)
@@ -114,7 +121,7 @@ public enum ApplicationsDao {
 			for (int i = 0; i < list.size(); ++i) {
 				Application item = list.get(i);
 				if (item.get_appId().equals(updatedApplication.get_appId())) {
-					// do not update archived job
+					// do not update archived application
 					if (item.getStatus().equals(ApplicationStatus.ARCHIVED)) {
 						continue;
 					}

@@ -54,8 +54,12 @@ public enum ReviewsDao {
 				Unmarshaller um = context.createUnmarshaller();
 				rl = (ReviewList) um.unmarshal(new FileReader(DATASOURCE));
 				list = rl.getReviewList();
+				if (list == null) {
+					list = new ArrayList<Review>();
+				}
 	        }
 			list.add(newReview);
+			rl.setReviewList(list);
 			
 			// write to database
 			Marshaller m = context.createMarshaller();
@@ -109,12 +113,15 @@ public enum ReviewsDao {
 			Unmarshaller um = context.createUnmarshaller();
 			ReviewList rl = (ReviewList) um.unmarshal(new FileReader(DATASOURCE));
 			list = rl.getReviewList();
+	    	if (list == null) {
+	    		list = new ArrayList<Review>();
+	    	}
+			return list;
 		} catch (JAXBException e) {
 			throw new InternalServerErrorException("Failed to connect to database");
 		} catch (FileNotFoundException e) {
 			throw new NotFoundException("Review list not found");
 		}
-		return list;
     }
 
 }

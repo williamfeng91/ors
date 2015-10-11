@@ -5,8 +5,10 @@ import java.util.UUID;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -22,6 +24,7 @@ import javax.ws.rs.core.UriInfo;
 
 import au.edu.unsw.soacourse.ors.dao.*;
 import au.edu.unsw.soacourse.ors.model.*;
+import au.edu.unsw.soacourse.ors.security.Security;
 
 @Path("/reviews")
 public class ReviewsResource {
@@ -37,11 +40,16 @@ public class ReviewsResource {
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 	public Response newReview(
+			@HeaderParam("ORSKey") String orsKey,
+			@HeaderParam("ShortKey") String shortKey,
 			@FormParam("_appId") String _appId,
 			@FormParam("_uId") String _uId,
 			@FormParam("comments") String comments,
 			@FormParam("decision") String decision
 	) {
+		if (!Security.instance.isRightKey(orsKey) || !Security.instance.isReviewer(shortKey)) {
+			throw new ForbiddenException("User does not have permission");
+		}
 		if (!validateInput(_appId, _uId, comments, decision)) {
 			throw new BadRequestException("Invalid form parameters");
 		}
@@ -63,7 +71,12 @@ public class ReviewsResource {
 	@GET
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-	public Response getReviews() {
+	public Response getReviews(
+			@HeaderParam("ORSKey") String orsKey,
+			@HeaderParam("ShortKey") String shortKey) {
+		if (!Security.instance.isInternalUser(orsKey, shortKey)) {
+			throw new ForbiddenException("User does not have permission");
+		}
 		List<Review> list = ReviewsDao.instance.getAll();
 		if (list == null) {
 			throw new NotFoundException("Review list not found");
@@ -77,7 +90,13 @@ public class ReviewsResource {
 	@GET
 	@Path("{id}")
 	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-	public Response getReview(@PathParam("id") String id) {
+	public Response getReview(
+			@HeaderParam("ORSKey") String orsKey,
+			@HeaderParam("ShortKey") String shortKey,
+			@PathParam("id") String id) {
+		if (!Security.instance.isInternalUser(orsKey, shortKey)) {
+			throw new ForbiddenException("User does not have permission");
+		}
 		Review r = ReviewsDao.instance.getById(id);
 		return Response.ok(r).build();
 	}

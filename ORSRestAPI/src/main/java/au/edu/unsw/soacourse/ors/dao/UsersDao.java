@@ -58,12 +58,15 @@ public enum UsersDao {
 			Unmarshaller um = context.createUnmarshaller();
 			UserList jl = (UserList) um.unmarshal(new FileReader(DATASOURCE));
 			list = jl.getUserList();
+	    	if (list == null) {
+	    		list = new ArrayList<User>();
+	    	}
+	    	return list;
 		} catch (JAXBException e) {
 			throw new InternalServerErrorException("Failed to connect to database");
 		} catch (FileNotFoundException e) {
 			throw new NotFoundException("User list not found");
 		}
-		return list;
     }
 
 }

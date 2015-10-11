@@ -6,8 +6,10 @@ import java.util.UUID;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -24,6 +26,7 @@ import javax.ws.rs.core.UriInfo;
 
 import au.edu.unsw.soacourse.ors.dao.*;
 import au.edu.unsw.soacourse.ors.model.*;
+import au.edu.unsw.soacourse.ors.security.Security;
 
 @Path("/applications")
 public class ApplicationsResource {
@@ -70,14 +73,15 @@ public class ApplicationsResource {
 	// Return a list of all applications
 	@GET
 	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-	public Response getApplications() {
-		List<Application> list = ApplicationsDao.instance.getAll();
-		if (list == null) {
-			throw new NotFoundException("Application list not found");
-		} else {
-			GenericEntity<List<Application>> returnList = new GenericEntity<List<Application>>(list) {};
-			return Response.ok(returnList).build();
+	public Response getApplications(
+			@HeaderParam("ORSKey") String orsKey,
+			@HeaderParam("ShortKey") String shortKey) {
+		if (!Security.instance.isInternalUser(orsKey, shortKey)) {
+			throw new ForbiddenException("User does not have permission");
 		}
+		List<Application> list = ApplicationsDao.instance.getAll();
+		GenericEntity<List<Application>> returnList = new GenericEntity<List<Application>>(list) {};
+		return Response.ok(returnList).build();
 	}
 	
 	// Return the application with specified id
@@ -93,7 +97,13 @@ public class ApplicationsResource {
 	@GET
 	@Path("{id}/reviews")
 	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-	public Response getApplicationReviews(@PathParam("id") String id) {
+	public Response getApplicationReviews(
+			@HeaderParam("ORSKey") String orsKey,
+			@HeaderParam("ShortKey") String shortKey,
+			@PathParam("id") String id) {
+		if (!Security.instance.isInternalUser(orsKey, shortKey)) {
+			throw new ForbiddenException("User does not have permission");
+		}
 		List<Review> list = ReviewsDao.instance.getByApplication(id);
 		if (list == null) {
 			throw new NotFoundException("Review list not found");
@@ -101,6 +111,21 @@ public class ApplicationsResource {
 			GenericEntity<List<Review>> returnList = new GenericEntity<List<Review>>(list) {};
 			return Response.ok(returnList).build();
 		}
+	}
+	
+	// Return the auto-check results of the application with specified id
+	@GET
+	@Path("{id}/autoCheckResults")
+	@Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+	public Response getApplicationAutoCheckResults(
+			@HeaderParam("ORSKey") String orsKey,
+			@HeaderParam("ShortKey") String shortKey,
+			@PathParam("id") String id) {
+		if (!Security.instance.isInternalUser(orsKey, shortKey)) {
+			throw new ForbiddenException("User does not have permission");
+		}
+		AutoCheckResult autoCheckResult = AutoCheckResultsDao.instance.getByApplication(id);
+		return Response.ok(autoCheckResult).build();
 	}
 	
 	// Update the application with specified id
