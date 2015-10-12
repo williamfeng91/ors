@@ -53,6 +53,12 @@
         <td><c:out value="${application.resume}"/></td>
       </tr>
     </table>
+    
+    <c:if test="${not empty user}">
+      <a href="<c:url value="/jobs/${application._jobId}/applications" />">
+        <button class="btn btn-default">Back to list</button>
+      </a>
+    </c:if>
     <c:if test="${empty user}">
       <div class="row">
         <c:if test="${application.status eq 'CREATED'}">

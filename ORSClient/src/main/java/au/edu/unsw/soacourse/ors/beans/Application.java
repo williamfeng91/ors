@@ -16,6 +16,17 @@ public class Application {
 	public Application() {
 		
 	}
+	
+	public Application(Application another) {
+		this._appId = another._appId;
+		this._jobId = another._jobId;
+		this.licenseNo = another.licenseNo;
+		this.fullName = another.fullName;
+		this.postcode = another.postcode;
+		this.cv = another.cv;
+		this.resume = another.resume;
+		this.status = another.status;
+	}
 
 	public String get_appId() {
 		return _appId;

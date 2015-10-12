@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +21,7 @@ import au.edu.unsw.soacourse.autocheck.AutoCheckRequest;
 import au.edu.unsw.soacourse.autocheck.AutoCheckResponse;
 import au.edu.unsw.soacourse.autocheck.AutoCheckServiceProcessPortType;
 import au.edu.unsw.soacourse.ors.beans.*;
+import au.edu.unsw.soacourse.ors.business.DataService;
 import au.edu.unsw.soacourse.ors.common.ApplicationStatus;
 import au.edu.unsw.soacourse.ors.common.RecruitmentStatus;
 import au.edu.unsw.soacourse.ors.dao.ApplicationsDao;
@@ -36,19 +35,9 @@ public class JobController {
 	private static final String ORSKEY = "i-am-ors";
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 	private static final String TODAY = DATE_FORMAT.format(new Date());
-	UsersDao usersDao;
-	
-	@Autowired
-	ServletContext context;
 	
 	@Autowired
 	private AutoCheckServiceProcessPortType autoCheckService;
-	
-	@PostConstruct
-	public void setUpUserDB() {
-		usersDao = new UsersDao(context);
-		context.setAttribute("today", TODAY);
-	}
 	
 	@RequestMapping("/jobs/new")
 	public String visitNewJobPage(HttpServletRequest request, ModelMap model) {
@@ -114,7 +103,12 @@ public class JobController {
 				list = JobsDao.instance.getAll(ORSKEY, user.getShortKey().toString());
 				// if all applications of a job are reviewed, proceed to next recruitment stage
 				for (Job item : list) {
-					if (ApplicationsDao.instance.allReviewed(ORSKEY, user.getShortKey(), item.get_jobId())) {
+					if (item.getStatus().equals(RecruitmentStatus.CREATED)
+							&& DataService.instance.hasReceivedApplication(ORSKEY, user.getShortKey(), item.get_jobId())) {
+						item.setStatus(RecruitmentStatus.RECEIVED_APPLICATION);
+					}
+					if (item.getStatus().equals(RecruitmentStatus.IN_REVIEW)
+							&& DataService.instance.allApplicationsReviewed(ORSKEY, user.getShortKey(), item.get_jobId())) {
 						item.setStatus(RecruitmentStatus.PROCESSED);
 					}
 				}
@@ -124,6 +118,7 @@ public class JobController {
 				list = JobsDao.instance.getOpenJobs();
 			}
 			model.addAttribute("jobs", list);
+			model.addAttribute("today", TODAY);
 			model.addAttribute("successMsg", successMsg);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -205,18 +200,13 @@ public class JobController {
 			if (j.getStatus().equals(RecruitmentStatus.CREATED)) {
 				return "redirect:/jobs";
 			}
-			List<Application> validApplications = new ArrayList<Application>();
+			List<DetailedApplication> list = new ArrayList<DetailedApplication>();
 			List<Application> applications = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), jobId);
 			for (Application a : applications) {
-				if (ApplicationsDao.instance.isShortlistedByAllReviewers(ORSKEY, user.getShortKey(), a.get_appId())) {
-					a.setStatus(ApplicationStatus.SHORTLISTED);
-				}
-				if (a.getStatus().equals(ApplicationStatus.REVIEWED)
-						|| a.getStatus().equals(ApplicationStatus.SHORTLISTED)) {
-					validApplications.add(a);
-				}
+				DetailedApplication da = new DetailedApplication(a);
+				list.add(da);
 			}
-			model.addAttribute("applications", validApplications);
+			model.addAttribute("applications", list);
 			model.addAttribute("job", j);
 			return "shortlist";
 		} catch (Exception e) {
@@ -357,7 +347,7 @@ public class JobController {
 	@RequestMapping(value="/advSearchJob", method={RequestMethod.GET})
 	public String visitAdvSearchPage(ModelMap model) {
 		model.addAttribute("statuses", RecruitmentStatus.values());
-		model.addAttribute("teams", usersDao.getAllTeams());
+		model.addAttribute("teams", UsersDao.instance.getAllTeams());
 		return "advSearchJob";
 	}
 	
@@ -453,7 +443,7 @@ public class JobController {
 		try {
 			Job j = JobsDao.instance.getById(id);
 			model.addAttribute("job", j);
-			model.addAttribute("teams", usersDao.getAllTeams());
+			model.addAttribute("teams", UsersDao.instance.getAllTeams());
 			return "assignTeam";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -500,7 +490,7 @@ public class JobController {
 			if (assignedTeam.isEmpty()) {
 				assignedTeam = null;
 			} else {	// if hiring team is assigned and auto-check is done, proceed to next recruitment stage
-				if (AutoCheckResultsDao.instance.allDone(ORSKEY, user.getShortKey(), id)) {
+				if (DataService.instance.allApplicationsAutoChecked(ORSKEY, user.getShortKey(), id)) {
 					updatedJob.setStatus(RecruitmentStatus.IN_REVIEW);
 					// update status for all applications of the job
 					List<Application> applications = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), id);
@@ -590,7 +580,7 @@ public class JobController {
 				return false;
 			}
     	}
-    	if (assignedTeam != null && !usersDao.getAllTeams().contains(assignedTeam)) {
+    	if (assignedTeam != null && !UsersDao.instance.getAllTeams().contains(assignedTeam)) {
 			return false;
     	}
     	return true;
@@ -648,7 +638,7 @@ public class JobController {
     		}
     	}
     	if (assignedTeam != null && !assignedTeam.isEmpty()
-    			&& !usersDao.getAllTeams().contains(assignedTeam)) {
+    			&& !UsersDao.instance.getAllTeams().contains(assignedTeam)) {
 			return false;
     	}
     	return true;

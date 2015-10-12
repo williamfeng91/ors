@@ -1,5 +1,8 @@
 package au.edu.unsw.soacourse.ors.web;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +18,7 @@ import au.edu.unsw.soacourse.autocheck.AutoCheckRequest;
 import au.edu.unsw.soacourse.autocheck.AutoCheckResponse;
 import au.edu.unsw.soacourse.autocheck.AutoCheckServiceProcessPortType;
 import au.edu.unsw.soacourse.ors.beans.*;
+import au.edu.unsw.soacourse.ors.business.DataService;
 import au.edu.unsw.soacourse.ors.common.ApplicationStatus;
 import au.edu.unsw.soacourse.ors.dao.ApplicationsDao;
 import au.edu.unsw.soacourse.ors.dao.AutoCheckResultsDao;
@@ -28,6 +32,8 @@ public class ApplicationController {
 	private AutoCheckServiceProcessPortType autoCheckService;
 	
 	private static final String ORSKEY = "i-am-ors";
+	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	private static final String TODAY = DATE_FORMAT.format(new Date());
 	
 	@RequestMapping("/jobs/{jobId}/apply")
 	public String visitNewApplicationPage(@PathVariable String jobId, ModelMap model) {
@@ -90,8 +96,14 @@ public class ApplicationController {
 			return "login";
 		}
 		try {
-			List<Application> list;
-			list = ApplicationsDao.instance.getAll(ORSKEY, user.getShortKey().toString());
+			List<DetailedApplication> list = new ArrayList<DetailedApplication>();
+			List<Application> applications = ApplicationsDao.instance.getAll(ORSKEY, user.getShortKey());
+			for (Application a : applications) {
+				DetailedApplication da = new DetailedApplication(a);
+				da.setAutoCheckResult(AutoCheckResultsDao.instance.getByApplication(ORSKEY, user.getShortKey(), da.get_appId()));
+				da.setReviews((ArrayList) ReviewsDao.instance.getByApplication(ORSKEY, user.getShortKey(), da.get_appId()));
+				list.add(da);
+			}
 			model.addAttribute("applications", list);
 			return "applications";
 		} catch (Exception e) {
@@ -109,17 +121,18 @@ public class ApplicationController {
 			return "login";
 		}
 		try {
-			List<Application> list = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey().toString(), jobId);
-			for (Application a: list) {
-				if (user.getRole().equals("reviewer")
-						&& ReviewsDao.instance.hasBeenReviewedBy(ORSKEY, user.getShortKey(), a.get_appId(), user.get_uid())) {
-					// mark that the current user has reviewed this application
-					a.setStatus(ApplicationStatus.REVIEWED);
-				}
+			List<DetailedApplication> list = new ArrayList<DetailedApplication>();
+			List<Application> applications = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey().toString(), jobId);
+			for (Application a : applications) {
+				DetailedApplication da = new DetailedApplication(a);
+				da.setAutoCheckResult(AutoCheckResultsDao.instance.getByApplication(ORSKEY, user.getShortKey(), da.get_appId()));
+				da.setReviews((ArrayList) ReviewsDao.instance.getByApplication(ORSKEY, user.getShortKey(), da.get_appId()));
+				list.add(da);
 			}
 			Job j = JobsDao.instance.getById(jobId);
 			model.addAttribute("applications", list);
 			model.addAttribute("job", j);
+			model.addAttribute("today", TODAY);
 			return "applications";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -136,6 +149,28 @@ public class ApplicationController {
 			model.addAttribute("application", a);
 			model.addAttribute("job", j);
 			return "applicationDetails";
+		} catch (Exception e) {
+			e.printStackTrace();
+			model.addAttribute("errorMsg", e.getMessage());
+			return "error";
+		}
+	}
+	
+	@RequestMapping("/applications/{appId}/autoCheckResult")
+	public String visitAutoCheckResultPage(@PathVariable String appId, HttpServletRequest request, ModelMap model) {
+		User user = (User) request.getSession().getAttribute("user");
+		if (user == null || !user.getRole().equals("manager")) {
+			model.addAttribute("errorMsg", "User has no permission");
+			return "login";
+		}
+		try {
+			Application a = ApplicationsDao.instance.getById(appId);
+			AutoCheckResult result = AutoCheckResultsDao.instance.getByApplication(ORSKEY, user.getShortKey(), appId);
+			if (result != null) {
+				model.addAttribute("autoCheckResult", result);
+			}
+			model.addAttribute("application", a);
+			return "autoCheckResult";
 		} catch (Exception e) {
 			e.printStackTrace();
 			model.addAttribute("errorMsg", e.getMessage());
@@ -165,10 +200,7 @@ public class ApplicationController {
 			newAutoCheckResult.setPdvResult(pdvResult);
 			newAutoCheckResult.setCrvResult(crvResult);
 			AutoCheckResultsDao.instance.create(ORSKEY, user.getShortKey(), newAutoCheckResult);
-			model.addAttribute("pdvResult", pdvResult);
-			model.addAttribute("crvResult", crvResult);
-			model.addAttribute("application", a);
-			return "autoCheckResult";
+			return "redirect:/applications/" + appId + "/autoCheckResult";
 		} catch (Exception e) {
 			e.printStackTrace();
 			model.addAttribute("errorMsg", e.getMessage());

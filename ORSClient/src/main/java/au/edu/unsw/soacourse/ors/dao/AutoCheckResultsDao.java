@@ -4,14 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
 
-import au.edu.unsw.soacourse.ors.beans.Application;
 import au.edu.unsw.soacourse.ors.beans.AutoCheckResult;
-import au.edu.unsw.soacourse.ors.beans.Job;
 
 
 public enum AutoCheckResultsDao {
@@ -30,7 +27,7 @@ public enum AutoCheckResultsDao {
 
     public void create(String orsKey, String shortKey, AutoCheckResult newAutoCheckResult) {
     	client = WebClient.create(REST_URI, providers);
-    	Response r = client.path("/autoCheckResults")
+    	client.path("/autoCheckResults")
     		.accept(MediaType.APPLICATION_JSON)
     		.header("Content-Type", MediaType.APPLICATION_JSON)
     		.header(ORSKEY, orsKey)
@@ -54,8 +51,12 @@ public enum AutoCheckResultsDao {
     		.accept(MediaType.APPLICATION_JSON)
     		.header(ORSKEY, orsKey)
     		.header(SHORTKEY, shortKey);
-    	AutoCheckResult result = (AutoCheckResult) client.get(AutoCheckResult.class);
-		return result;
+    	try {
+    		AutoCheckResult result = (AutoCheckResult) client.get(AutoCheckResult.class);
+    		return result;
+    	} catch (Exception e) {
+    		return null;
+    	}
     }
 
     public List<AutoCheckResult> getAll(String orsKey, String shortKey) {
@@ -66,18 +67,6 @@ public enum AutoCheckResultsDao {
     		.header(SHORTKEY, shortKey);
 		List<AutoCheckResult> list = (List<AutoCheckResult>) client.getCollection(AutoCheckResult.class);
 		return list;
-    }
-    
-    public boolean allDone(String orsKey, String shortKey, String jobId) {
-    	List<Application> applications = ApplicationsDao.instance.getByJob(orsKey, shortKey, jobId);
-    	for (Application a : applications) {
-    		try {
-    			getByApplication(orsKey, shortKey, a.get_appId());
-    		} catch (Exception e) {
-    			return false;
-    		}
-    	}
-    	return true;
     }
 
 }

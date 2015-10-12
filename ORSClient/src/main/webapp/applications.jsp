@@ -23,8 +23,8 @@
               </div>
               <div class="col-xs-12 col-sm-12 col-md-2 left-col">
                 <ul class="meta-search">
-                  <c:if test="${not empty user && application.status ne 'CREATED'}">
-                    <li><a href="<c:url value="/applications/${application._appId}/autoCheckResults" />"><span>View auto-check results</span></a></li>
+                  <c:if test="${not empty user && not empty application.autoCheckResult}">
+                    <li><a href="<c:url value="/applications/${application._appId}/autoCheckResult" />"><span>View auto-check results</span></a></li>
                   </c:if>
                   <c:if test="${not empty user && user.role eq 'manager' && application.status ne 'CREATED'}">
                     <li><a href="<c:url value="/applications/${application._appId}/reviews" />"><span>View reviews</span></a></li>
@@ -42,7 +42,14 @@
                       <c:choose>
                         <c:when test="${job.closingDate lt today}">
                           <p><a href="<c:url value="/applications/${application._appId}/doAutoCheck" />">
-                            <button type="button" class="btn btn-default">Start Auto-check</button>
+                            <button type="button" class="btn btn-default">
+                              <c:if test="${empty application.autoCheckResult}">
+                                Run Auto-check
+                              </c:if>
+                              <c:if test="${not empty application.autoCheckResult}">
+                                Re-run Auto-check
+                              </c:if>
+                            </button>
                           </a></p>
                         </c:when>
                         <c:otherwise>
@@ -79,7 +86,7 @@
                     <c:when test="${application.status eq 'CREATED'}">
                       <p><button type="button" class="btn btn-default disabled">Waiting for Auto-check</button></p>
                     </c:when>
-                    <c:when test="${application.status eq 'IN_REVIEW'}">
+                    <c:when test="${application.status eq 'IN_REVIEW' && !application.hasBeenReviewedBy(user._uId)}">
                       <p><a href="<c:url value="/applications/${application._appId}/review" />">
                         <button type="button" class="btn btn-default">Review</button>
                       </a></p>
@@ -94,6 +101,12 @@
             </div>
       </section>
     </c:forEach>
+    
+    <c:if test="${not empty user}">
+      <a href="<c:url value="/jobs" />">
+        <button class="btn btn-default">Back to list</button>
+      </a>
+    </c:if>
   </div>
   <%@ include file="footer.html" %>
 </body>

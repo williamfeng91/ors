@@ -13,6 +13,9 @@
           <h2 class="lead success-msg">${successMsg}</h2>
         </c:when>
         <c:otherwise>
+          <c:if test="${empty autoCheckResult}">
+            <h2 class="lead">No result</h2>
+          </c:if>
         </c:otherwise>
       </c:choose>
     </hgroup>
@@ -20,13 +23,19 @@
     <table class="table table-striped">
       <tr>
         <td width="25%">PDV Result</td>
-        <td><c:out value="${pdvResult}"/></td>
+        <td><c:out value="${autoCheckResult.pdvResult}"/></td>
       </tr>
       <tr>
         <td>CRV Result</td>
-        <td><c:out value="${crvResult}"/></td>
+        <td><c:out value="${autoCheckResult.crvResult}"/></td>
       </tr>
     </table>
+    
+    <c:if test="${not empty user}">
+      <a href="<c:url value="/jobs/${application._jobId}/applications" />">
+        <button class="btn btn-default">Back to list</button>
+      </a>
+    </c:if>
   </div>
   <%@ include file="footer.html" %>
 </body>

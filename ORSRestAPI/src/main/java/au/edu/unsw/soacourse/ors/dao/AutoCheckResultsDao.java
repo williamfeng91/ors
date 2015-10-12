@@ -84,7 +84,7 @@ public enum AutoCheckResultsDao {
     	throw new NotFoundException("AutoCheckResult not found");
     }
     
-    public AutoCheckResult getByApplication(String appId) {
+    public AutoCheckResult getByApplication(String appId) throws NotFoundException {
     	List<AutoCheckResult> list = getAll();
     	for (AutoCheckResult item : list) {
     		if (item.get_appId().equals(appId)) {

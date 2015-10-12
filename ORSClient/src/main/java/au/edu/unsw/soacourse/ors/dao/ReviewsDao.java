@@ -86,19 +86,5 @@ public enum ReviewsDao {
     	List<Review> list = (List<Review>) client.getCollection(Review.class);
 		return list;
     }
-    
-    public boolean hasBeenReviewedBy(String orsKey, String shortKey, String appId, String uId) {
-    	try {
-	    	List<Review> reviews = getByApplication(orsKey, shortKey, appId);
-	    	for (Review r : reviews) {
-	    		if (r.get_uId().equals(uId)) {
-	    			return true;
-	    		}
-	    	}
-	    	return false;
-    	} catch (Exception e) {
-    		return false;
-    	}
-    }
 
 }

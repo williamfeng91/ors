@@ -28,15 +28,12 @@
               </div>
               <div class="col-xs-12 col-sm-12 col-md-2 left-col">
                 <ul class="meta-search">
-                  <c:if test="${not empty user}">
+                  <c:if test="${not empty user && job.status ne 'CREATED'}">
                     <li>
                       <a href="<c:url value="/jobs/${job._jobId}/applications" />">
                         <span>View applications</span>
                       </a>
                     </li>
-                  </c:if>
-                  <c:if test="${not empty user && user.role eq 'manager' && job.status eq 'CREATED'}">
-                    <li><a href="<c:url value="/jobs/${job._jobId}/edit" />"><span>Edit</span></a></li>
                   </c:if>
                 </ul>
               </div>
@@ -55,14 +52,14 @@
               <div class="col-xs-12 col-sm-12 col-md-2 right-most">
                 <c:if test="${not empty user && user.role eq 'manager'}">
                   <c:choose>
-                    <c:when test="${job.status eq 'CREATED'}">
+                    <c:when test="${job.status eq 'CREATED' || job.status eq 'RECEIVED_APPLICATION'}">
                       <c:choose>
                         <c:when test="${job.closingDate ge today}">
                           <p><button type="button" class="btn btn-default disabled">Application Open</button></p>
                         </c:when>
                         <c:otherwise>
                           <p><a href="<c:url value="/jobs/${job._jobId}/startAutoChecks" />">
-                            <button type="button" class="btn btn-default">Start Auto-checks</button>
+                            <button type="button" class="btn btn-default">Run Auto-checks</button>
                           </a></p>
                           <p><a href="<c:url value="/jobs/${job._jobId}/assignTeam" />">
                             <button type="button" class="btn btn-default <c:if test="${not empty job.assignedTeam}">disabled</c:if>">Assign Hiring Team</button>

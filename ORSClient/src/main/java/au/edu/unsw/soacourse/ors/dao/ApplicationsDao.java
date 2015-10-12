@@ -11,9 +11,6 @@ import org.apache.cxf.jaxrs.client.WebClient;
 import org.codehaus.jackson.jaxrs.JacksonJaxbJsonProvider;
 
 import au.edu.unsw.soacourse.ors.beans.Application;
-import au.edu.unsw.soacourse.ors.beans.Review;
-import au.edu.unsw.soacourse.ors.common.ApplicationStatus;
-import au.edu.unsw.soacourse.ors.common.ReviewDecision;
 
 
 public enum ApplicationsDao {
@@ -91,33 +88,6 @@ public enum ApplicationsDao {
     	client = WebClient.create(REST_URI, providers);
     	client.path("/applications/" + id)
 			.delete();
-    }
-    
-    public boolean isShortlistedByAllReviewers(String orsKey, String shortKey, String appId) {
-    	List<Review> reviews = ReviewsDao.instance.getByApplication(orsKey, shortKey, appId);
-    	if (reviews.isEmpty()) {
-    		return false;
-    	}
-    	for (Review r : reviews) {
-    		if (r.getDecision().equals(ReviewDecision.REJECT)) {
-    			return false;
-    		}
-    	}
-    	return true;
-    }
-    
-    public boolean allReviewed(String orsKey, String shortKey, String jobId) {
-		List<Application> al = getByJob(orsKey, shortKey, jobId);
-		if (al.isEmpty()) {
-			return false;
-		}
-		for (Application item : al) {
-			if (!item.getStatus().equals(ApplicationStatus.REVIEWED)
-					&& !item.getStatus().equals(ApplicationStatus.ARCHIVED)) {
-				return false;
-			}
-		}
-    	return true;
     }
 
 }
