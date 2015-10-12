@@ -1,3 +1,39 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <autoCheckResults>
+    <autoCheckResult>
+        <_autoCheckId>fbbef420-b37f-42f5-86be-fb2a086cfba2</_autoCheckId>
+        <_appId>96bff880-5431-45bf-98cb-7813389bdf0b</_appId>
+        <pdvResult>the given details are correct against our records</pdvResult>
+        <crvResult>the given license number is known in our database, a further discussion is recommended</crvResult>
+    </autoCheckResult>
+    <autoCheckResult>
+        <_autoCheckId>07f7be44-8b56-4890-9993-365ae99edef7</_autoCheckId>
+        <_appId>888375d9-75c3-4bbe-9d79-19bb6bd51ab8</_appId>
+        <pdvResult>the given license number is not found in our records</pdvResult>
+        <crvResult>the given license number is not found in our records</crvResult>
+    </autoCheckResult>
+    <autoCheckResult>
+        <_autoCheckId>fbbef420-b37f-42f5-86be-fb2a086cfba3</_autoCheckId>
+        <_appId>96bff880-5431-45bf-98cb-7813389bdf0c</_appId>
+        <pdvResult>the given details are correct against our records</pdvResult>
+        <crvResult>the given license number is known in our database, a further discussion is recommended</crvResult>
+    </autoCheckResult>
+    <autoCheckResult>
+        <_autoCheckId>07f7be44-8b56-4890-9993-365ae99edef8</_autoCheckId>
+        <_appId>888375d9-75c3-4bbe-9d79-19bb6bd51ab9</_appId>
+        <pdvResult>the given license number is not found in our records</pdvResult>
+        <crvResult>the given license number is not found in our records</crvResult>
+    </autoCheckResult>
+    <autoCheckResult>
+        <_autoCheckId>fbbef420-b37f-42f5-86be-fb2a086cfba4</_autoCheckId>
+        <_appId>96bff880-5431-45bf-98cb-7813389bdf0d</_appId>
+        <pdvResult>the given details are correct against our records</pdvResult>
+        <crvResult>the given license number is known in our database, a further discussion is recommended</crvResult>
+    </autoCheckResult>
+    <autoCheckResult>
+        <_autoCheckId>07f7be44-8b56-4890-9993-365ae99edef9</_autoCheckId>
+        <_appId>888375d9-75c3-4bbe-9d79-19bb6bd51ab0</_appId>
+        <pdvResult>the given license number is not found in our records</pdvResult>
+        <crvResult>the given license number is not found in our records</crvResult>
+    </autoCheckResult>
 </autoCheckResults>

@@ -26,7 +26,7 @@
         </tr>
         <c:forEach var="application" items="${applications}">
           <tr>
-            <td><a href="<c:url value="/applications/${application._appId}" />"><c:out value="${application.name}"/></a></td>
+            <td><a href="<c:url value="/applications/${application._appId}" />"><c:out value="${application.fullName}"/></a></td>
             <td>
               <input type="radio" name="selectedCandidate" value="${application._appId}" />
             </td>

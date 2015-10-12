@@ -28,7 +28,7 @@
               </div>
               <div class="col-xs-12 col-sm-12 col-md-2 left-col">
                 <ul class="meta-search">
-                  <c:if test="${not empty user && job.status ne 'CREATED'}">
+                  <c:if test="${not empty user}">
                     <li>
                       <a href="<c:url value="/jobs/${job._jobId}/applications" />">
                         <span>View applications</span>
@@ -52,7 +52,7 @@
               <div class="col-xs-12 col-sm-12 col-md-2 right-most">
                 <c:if test="${not empty user && user.role eq 'manager'}">
                   <c:choose>
-                    <c:when test="${job.status eq 'CREATED' || job.status eq 'RECEIVED_APPLICATION'}">
+                    <c:when test="${job.status eq 'CREATED'}">
                       <c:choose>
                         <c:when test="${job.closingDate ge today}">
                           <p><button type="button" class="btn btn-default disabled">Application Open</button></p>
@@ -68,14 +68,18 @@
                       </c:choose>
                     </c:when>
                     <c:when test="${job.status eq 'IN_REVIEW'}">
-                      <p><a href="<c:url value="/jobs/${job._jobId}/applications" />">
-                        <button type="button" class="btn btn-default">View Review Status</button>
-                      </a></p>
-                    </c:when>
-                    <c:when test="${job.status eq 'PROCESSED'}">
-                      <p><a href="<c:url value="/jobs/${job._jobId}/shortlist" />">
-                        <button type="button" class="btn btn-default">Generate Shortlist</button>
-                      </a></p>
+                      <c:choose>
+                        <c:when test="${job.allApplicationsReviewed()}">
+	                      <p><a href="<c:url value="/jobs/${job._jobId}/shortlist" />">
+	                        <button type="button" class="btn btn-default">Generate Shortlist</button>
+	                      </a></p>
+	                    </c:when>
+	                    <c:otherwise>
+	                      <p><a href="<c:url value="/jobs/${job._jobId}/applications" />">
+	                        <button type="button" class="btn btn-default">View Review Status</button>
+	                      </a></p>
+	                    </c:otherwise>
+	                  </c:choose>
                     </c:when>
                     <c:when test="${job.status eq 'SENT_INVITATIONS'}">
                       <p><a href="<c:url value="/jobs/${job._jobId}/invitationStatus" />">
@@ -96,9 +100,29 @@
                   </c:choose>
                 </c:if>
                 <c:if test="${not empty user && user.role eq 'reviewer'}">
-                  <p><a href="<c:url value="/jobs/${job._jobId}/applications" />">
-                    <button type="button" class="btn btn-default">View Applications</button>
-                  </a></p>
+                  <c:choose>
+                    <c:when test="${job.status eq 'CREATED'}">
+                      <p><button type="button" class="btn btn-default disabled">Waiting for Auto-check</button></p>
+                    </c:when>
+                    <c:when test="${job.status eq 'IN_REVIEW'}">
+                      <c:choose>
+                        <c:when test="${job.allApplicationsReviewed()}">
+                          <p><button type="button" class="btn btn-default disabled">Reviewed</button></p>
+                        </c:when>
+                        <c:otherwise>
+	                      <p><a href="<c:url value="/jobs/${job._jobId}/applications" />">
+	                        <button type="button" class="btn btn-default">Start Reviewing</button>
+	                      </a></p>
+                        </c:otherwise>
+                      </c:choose>
+                    </c:when>
+                    <c:when test="${job.status eq 'ARCHIVED'}">
+                      <button type="button" class="btn btn-default disabled">Archived</button>
+                    </c:when>
+                    <c:otherwise>
+                      <button type="button" class="btn btn-default disabled">Reviewed</button>
+                    </c:otherwise>
+                  </c:choose>
                 </c:if>
               </div>
               <span class="clearfix borda"></span>

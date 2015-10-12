@@ -26,27 +26,25 @@
         </tr>
         <c:forEach var="application" items="${applications}">
           <tr>
-            <td><a href="<c:url value="/applications/${application._appId}/reviews" />"><c:out value="${application.name}"/></a></td>
+            <td><a href="<c:url value="/applications/${application._appId}/reviews" />"><c:out value="${application.fullName}"/></a></td>
             <td>
-              <c:choose>
-                <c:when test="${application.status eq 'SHORTLISTED'}">
-                  <input type="checkbox" name="${application._appId}" checked="checked" />
-                </c:when>
-                <c:otherwise>
-                  <input type="checkbox" name="${application._appId}" />
-                </c:otherwise>
-              </c:choose>
+              <input type="checkbox" name="${application._appId}" <c:if test="${application.isShortlistedByAllReviewers()}">checked="checked"</c:if> />
             </td>
           </tr>
         </c:forEach>
       </table>
-      <c:if test="${job.status eq 'IN_REVIEW'}">
+      <c:if test="${job.status eq 'PROCESSED'}">
         <div class="row">
           <button type="submit" class="btn btn-default">Send Invitations</button>
           <a href="<c:url value="/jobs" />"><button type="button" class="btn btn-default">Cancel</button></a>
         </div>
       </c:if>
     </form>
+    <div class="row">
+      <a href="<c:url value="/jobs/${application._jobId}/applications" />">
+        <button class="btn btn-default">Back to list</button>
+      </a>
+    </div>
   </div>
 <%@ include file="footer.html" %>
 </body>

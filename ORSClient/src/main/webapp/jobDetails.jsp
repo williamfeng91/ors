@@ -4,7 +4,7 @@
   <div class="container">
     
     <hgroup class="mb20">
-      <center><h1>Job Details</h1></center>
+      <h1>Job Details</h1>
       <c:choose>
         <c:when test="${not empty errorMsg}" >
           <h2 class="lead error-msg">${errorMsg}</h2>
@@ -48,12 +48,15 @@
       </c:if>
     </table>
     <div class="row">
+      <a href="<c:url value="/jobs" />">
+        <button class="btn btn-default">Back to list</button>
+      </a>
       <c:choose>
         <c:when test="${not empty user && user.role eq 'manager'}">
-          <c:if test="${job.status eq 'CREATED'}">
+          <c:if test="${job.status eq 'CREATED' && !job.hasReceivedApplication()}">
             <a href="<c:url value="/jobs/${job._jobId}/edit" />"><button class="btn btn-default">Edit</button></a>
           </c:if>
-          <c:if test="${job.status eq 'CREATED' || job.status eq 'FINALISED'}">
+          <c:if test="${job.status eq 'CREATED' && !job.hasReceivedApplication() || job.status eq 'FINALISED'}">
             <a href="<c:url value="/jobs/${job._jobId}/delete" />"><button class="btn btn-default">Delete</button></a>
           </c:if>
         </c:when>

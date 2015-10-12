@@ -16,6 +16,17 @@ public class Job {
     public Job() {
 
     }
+    
+    public Job(Job another) {
+    	this._jobId = another._jobId;
+    	this.closingDate = another.closingDate;
+    	this.salary = another.salary;
+    	this.positionType = another.positionType;
+    	this.location = another.location;
+    	this.description = another.description;
+    	this.status = another.status;
+    	this.assignedTeam = another.assignedTeam;
+    }
 
 	public String get_jobId() {
 		return _jobId;

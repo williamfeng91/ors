@@ -34,6 +34,11 @@
         </tr>
       </table>
     </c:forEach>
+    <div class="row">
+      <a href="<c:url value="/jobs/${application._jobId}/applications" />">
+        <button class="btn btn-default">Back to list</button>
+      </a>
+    </div>
   </div>
   <%@ include file="footer.html" %>
 </body>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <applications>
     <application>
         <_appId>c8973079-a0f1-405d-a75b-9b1ed98c8526</_appId>
@@ -9,5 +9,65 @@
         <cv>a</cv>
         <resume>b</resume>
         <status>CREATED</status>
+    </application>
+    <application>
+        <_appId>96bff880-5431-45bf-98cb-7813389bdf0b</_appId>
+        <_jobId>4ad0d143-7965-425e-8f9b-1ec3c5a41308</_jobId>
+        <licenseNo>123</licenseNo>
+        <fullName>William</fullName>
+        <postcode>2000</postcode>
+        <cv>a</cv>
+        <resume>b</resume>
+        <status>IN_REVIEW</status>
+    </application>
+    <application>
+        <_appId>888375d9-75c3-4bbe-9d79-19bb6bd51ab8</_appId>
+        <_jobId>4ad0d143-7965-425e-8f9b-1ec3c5a41308</_jobId>
+        <licenseNo>234</licenseNo>
+        <fullName>Mandy</fullName>
+        <postcode>2000</postcode>
+        <cv>c</cv>
+        <resume>d</resume>
+        <status>IN_REVIEW</status>
+    </application>
+    <application>
+        <_appId>96bff880-5431-45bf-98cb-7813389bdf0c</_appId>
+        <_jobId>4ad0d143-7965-425e-8f9b-1ec3c5a41309</_jobId>
+        <licenseNo>123</licenseNo>
+        <fullName>William</fullName>
+        <postcode>2000</postcode>
+        <cv>a</cv>
+        <resume>b</resume>
+        <status>REVIEWED</status>
+    </application>
+    <application>
+        <_appId>888375d9-75c3-4bbe-9d79-19bb6bd51ab9</_appId>
+        <_jobId>4ad0d143-7965-425e-8f9b-1ec3c5a41309</_jobId>
+        <licenseNo>234</licenseNo>
+        <fullName>Mandy</fullName>
+        <postcode>2000</postcode>
+        <cv>c</cv>
+        <resume>d</resume>
+        <status>REVIEWED</status>
+    </application>
+    <application>
+        <_appId>96bff880-5431-45bf-98cb-7813389bdf0d</_appId>
+        <_jobId>4ad0d143-7965-425e-8f9b-1ec3c5a41300</_jobId>
+        <licenseNo>123</licenseNo>
+        <fullName>William</fullName>
+        <postcode>2000</postcode>
+        <cv>a</cv>
+        <resume>b</resume>
+        <status>SHORTLISTED</status>
+    </application>
+    <application>
+        <_appId>888375d9-75c3-4bbe-9d79-19bb6bd51ab0</_appId>
+        <_jobId>4ad0d143-7965-425e-8f9b-1ec3c5a41300</_jobId>
+        <licenseNo>234</licenseNo>
+        <fullName>Mandy</fullName>
+        <postcode>2000</postcode>
+        <cv>c</cv>
+        <resume>d</resume>
+        <status>SHORTLISTED</status>
     </application>
 </applications>

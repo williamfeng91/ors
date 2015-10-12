@@ -18,7 +18,6 @@ import au.edu.unsw.soacourse.autocheck.AutoCheckRequest;
 import au.edu.unsw.soacourse.autocheck.AutoCheckResponse;
 import au.edu.unsw.soacourse.autocheck.AutoCheckServiceProcessPortType;
 import au.edu.unsw.soacourse.ors.beans.*;
-import au.edu.unsw.soacourse.ors.business.DataService;
 import au.edu.unsw.soacourse.ors.common.ApplicationStatus;
 import au.edu.unsw.soacourse.ors.dao.ApplicationsDao;
 import au.edu.unsw.soacourse.ors.dao.AutoCheckResultsDao;
@@ -159,7 +158,7 @@ public class ApplicationController {
 	@RequestMapping("/applications/{appId}/autoCheckResult")
 	public String visitAutoCheckResultPage(@PathVariable String appId, HttpServletRequest request, ModelMap model) {
 		User user = (User) request.getSession().getAttribute("user");
-		if (user == null || !user.getRole().equals("manager")) {
+		if (user == null) {
 			model.addAttribute("errorMsg", "User has no permission");
 			return "login";
 		}
@@ -283,10 +282,15 @@ public class ApplicationController {
 	}
 	
 	@RequestMapping(value="/applications/{id}/delete")
-	public String deleteApplication(@PathVariable String id, ModelMap model) {
+	public String deleteApplication(@PathVariable String id, HttpServletRequest request, ModelMap model) {
 		try {
 			ApplicationsDao.instance.delete(id);
-			return "redirect:/jobs";
+			Application a = ApplicationsDao.instance.getById(id);
+			if (request.getSession().getAttribute("user") != null) {
+				return "redirect:/jobs/" + a.get_jobId() + "/applications";
+			} else {
+				return "redirect:/jobs";
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			model.addAttribute("errorMsg", e.getMessage());

@@ -30,12 +30,11 @@
         <td><c:out value="${autoCheckResult.crvResult}"/></td>
       </tr>
     </table>
-    
-    <c:if test="${not empty user}">
+    <div class="row">
       <a href="<c:url value="/jobs/${application._jobId}/applications" />">
         <button class="btn btn-default">Back to list</button>
       </a>
-    </c:if>
+    </div>
   </div>
   <%@ include file="footer.html" %>
 </body>

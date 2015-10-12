@@ -86,7 +86,7 @@
                     <c:when test="${application.status eq 'CREATED'}">
                       <p><button type="button" class="btn btn-default disabled">Waiting for Auto-check</button></p>
                     </c:when>
-                    <c:when test="${application.status eq 'IN_REVIEW' && !application.hasBeenReviewedBy(user._uId)}">
+                    <c:when test="${application.status eq 'IN_REVIEW' && !application.hasBeenReviewedBy(user._uid)}">
                       <p><a href="<c:url value="/applications/${application._appId}/review" />">
                         <button type="button" class="btn btn-default">Review</button>
                       </a></p>

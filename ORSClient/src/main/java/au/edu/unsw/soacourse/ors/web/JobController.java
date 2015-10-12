@@ -21,12 +21,12 @@ import au.edu.unsw.soacourse.autocheck.AutoCheckRequest;
 import au.edu.unsw.soacourse.autocheck.AutoCheckResponse;
 import au.edu.unsw.soacourse.autocheck.AutoCheckServiceProcessPortType;
 import au.edu.unsw.soacourse.ors.beans.*;
-import au.edu.unsw.soacourse.ors.business.DataService;
 import au.edu.unsw.soacourse.ors.common.ApplicationStatus;
 import au.edu.unsw.soacourse.ors.common.RecruitmentStatus;
 import au.edu.unsw.soacourse.ors.dao.ApplicationsDao;
 import au.edu.unsw.soacourse.ors.dao.AutoCheckResultsDao;
 import au.edu.unsw.soacourse.ors.dao.JobsDao;
+import au.edu.unsw.soacourse.ors.dao.ReviewsDao;
 import au.edu.unsw.soacourse.ors.dao.UsersDao;
 
 @Controller
@@ -98,26 +98,28 @@ public class JobController {
 			ModelMap model) {
 		User user = (User) request.getSession().getAttribute("user");
 		try {
-			List<Job> list;
 			if (user != null && user.getRole().equals("manager")) {
-				list = JobsDao.instance.getAll(ORSKEY, user.getShortKey().toString());
-				// if all applications of a job are reviewed, proceed to next recruitment stage
-				for (Job item : list) {
-					if (item.getStatus().equals(RecruitmentStatus.CREATED)
-							&& DataService.instance.hasReceivedApplication(ORSKEY, user.getShortKey(), item.get_jobId())) {
-						item.setStatus(RecruitmentStatus.RECEIVED_APPLICATION);
-					}
-					if (item.getStatus().equals(RecruitmentStatus.IN_REVIEW)
-							&& DataService.instance.allApplicationsReviewed(ORSKEY, user.getShortKey(), item.get_jobId())) {
-						item.setStatus(RecruitmentStatus.PROCESSED);
-					}
+				List<DetailedJob> list = new ArrayList<DetailedJob>();
+				List<Job> jobs = JobsDao.instance.getAll(ORSKEY, user.getShortKey());
+				for (Job j : jobs) {
+					DetailedJob dj = new DetailedJob(j);
+					dj.setApplications((ArrayList<Application>) ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), dj.get_jobId()));
+					list.add(dj);
 				}
+				model.addAttribute("jobs", list);
 			} else if (user != null && user.getRole().equals("reviewer")) {
-				list = JobsDao.instance.getAssignedJobs(ORSKEY, user.getShortKey(), user.getDepartment());
+				List<DetailedJob> list = new ArrayList<DetailedJob>();
+				List<Job> jobs = JobsDao.instance.getAssignedJobs(ORSKEY, user.getShortKey(), user.getDepartment());
+				for (Job j : jobs) {
+					DetailedJob dj = new DetailedJob(j);
+					dj.setApplications((ArrayList<Application>) ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), dj.get_jobId()));
+					list.add(dj);
+				}
+				model.addAttribute("jobs", list);
 			} else {
-				list = JobsDao.instance.getOpenJobs();
+				List<Job> list = JobsDao.instance.getOpenJobs();
+				model.addAttribute("jobs", list);
 			}
-			model.addAttribute("jobs", list);
 			model.addAttribute("today", TODAY);
 			model.addAttribute("successMsg", successMsg);
 		} catch (Exception e) {
@@ -131,8 +133,9 @@ public class JobController {
 	@RequestMapping(value="/jobs/{id}")
 	public String visitJobPage(@PathVariable String id, ModelMap model) {
 		try {
-			Job j = JobsDao.instance.getById(id);
+			Job j = new DetailedJob(JobsDao.instance.getById(id));
 			model.addAttribute("job", j);
+			model.addAttribute("today", TODAY);
 			return "jobDetails";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -204,6 +207,7 @@ public class JobController {
 			List<Application> applications = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), jobId);
 			for (Application a : applications) {
 				DetailedApplication da = new DetailedApplication(a);
+				da.setReviews((ArrayList<Review>) ReviewsDao.instance.getByApplication(ORSKEY, user.getShortKey(), a.get_appId()));
 				list.add(da);
 			}
 			model.addAttribute("applications", list);
@@ -224,8 +228,9 @@ public class JobController {
 			return "login";
 		}
 		try {
-			Job j = JobsDao.instance.getById(jobId);
-			if (!j.getStatus().equals(RecruitmentStatus.IN_REVIEW)) {
+			DetailedJob j = new DetailedJob(JobsDao.instance.getById(jobId));
+			if (!j.getStatus().equals(RecruitmentStatus.IN_REVIEW)
+					&& j.allApplicationsReviewed()) {
 				return "redirect:/jobs";
 			}
 			List<Application> applications = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), jobId);
@@ -378,9 +383,8 @@ public class JobController {
 		}
 		try {
 			User user = (User) request.getSession().getAttribute("user");
-			List<Job> list;
 			if (user == null) {
-				list = JobsDao.instance.search(
+				List<Job> list = JobsDao.instance.search(
 						null,
 						null,
 						closingDateFrom,
@@ -392,8 +396,10 @@ public class JobController {
 						description,
 						status,
 						assignedTeam);
+				model.addAttribute("jobs", list);
 			} else {
-				list = JobsDao.instance.search(
+				List<DetailedJob> list = new ArrayList<DetailedJob>();
+				List<Job> jobs = JobsDao.instance.search(
 						ORSKEY,
 						user.getShortKey(),
 						closingDateFrom,
@@ -405,8 +411,13 @@ public class JobController {
 						description,
 						status,
 						assignedTeam);
+				for (Job j : jobs) {
+					DetailedJob dj = new DetailedJob(j);
+					dj.setApplications((ArrayList<Application>) ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), dj.get_jobId()));
+					list.add(dj);
+				}
+				model.addAttribute("jobs", list);
 			}
-			model.addAttribute("jobs", list);
 			return "jobs";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -452,8 +463,8 @@ public class JobController {
 		}
 	}
 	
-	@RequestMapping(value="/jobs/{id}/update", method={RequestMethod.POST})
-	public String updateJob(@PathVariable String id, HttpServletRequest request, ModelMap model) {
+	@RequestMapping(value="/jobs/{jobId}/update", method={RequestMethod.POST})
+	public String updateJob(@PathVariable String jobId, HttpServletRequest request, ModelMap model) {
 		User user = (User) request.getSession().getAttribute("user");
 		if (user == null) {
 			model.addAttribute("errorMsg", "User has no permission");
@@ -467,7 +478,7 @@ public class JobController {
 		String status = request.getParameter("status");
 		String assignedTeam = request.getParameter("assignedTeam");
 
-		Job updatedJob = JobsDao.instance.getById(id);
+		Job updatedJob = JobsDao.instance.getById(jobId);
 		if (closingDate != null) {
 			updatedJob.setClosingDate(closingDate);
 		}
@@ -490,10 +501,11 @@ public class JobController {
 			if (assignedTeam.isEmpty()) {
 				assignedTeam = null;
 			} else {	// if hiring team is assigned and auto-check is done, proceed to next recruitment stage
-				if (DataService.instance.allApplicationsAutoChecked(ORSKEY, user.getShortKey(), id)) {
+				DetailedJob j = new DetailedJob(JobsDao.instance.getById(jobId));
+				if (j.allApplicationsAutoChecked()) {
 					updatedJob.setStatus(RecruitmentStatus.IN_REVIEW);
 					// update status for all applications of the job
-					List<Application> applications = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), id);
+					List<Application> applications = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), jobId);
 					for (Application a : applications) {
 						a.setStatus(ApplicationStatus.IN_REVIEW);
 						ApplicationsDao.instance.update(a);
@@ -505,11 +517,11 @@ public class JobController {
 		if (!validateInput(closingDate, salary, positionType, location, description, status, assignedTeam)) {
 			model.addAttribute("errorMsg", "Invalid form data");
 			model.addAttribute("job", updatedJob);
-			return "redirect:/jobs/" + id + "/edit";
+			return "redirect:/jobs/" + jobId + "/edit";
 		}
 		try {
 			JobsDao.instance.update(ORSKEY, user.getShortKey(), updatedJob);
-			return "redirect:/jobs/" + id;
+			return "redirect:/jobs/" + jobId;
 		} catch (Exception e) {
 			e.printStackTrace();
 			model.addAttribute("errorMsg", e.getMessage());

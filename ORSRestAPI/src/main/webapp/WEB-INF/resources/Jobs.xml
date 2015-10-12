@@ -1,6 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <jobs>
     <job>
+        <_jobId>4ad0d143-7965-425e-8f9b-1ec3c5a41300</_jobId>
+        <closingDate>2015-10-01</closingDate>
+        <salary>64000</salary>
+        <positionType>Legal Assistant</positionType>
+        <location>CBD, Inner &amp; Eastern Suburbs</location>
+        <description>Legal Assistant. Insurance/Insolvency/Planning &amp; Environment Practices. National firm with a number of roles as a result of their continuous growth.</description>
+        <status>SENT_INVITATIONS</status>
+        <assignedTeam>AIMS Project</assignedTeam>
+    </job>
+    <job>
+        <_jobId>4ad0d143-7965-425e-8f9b-1ec3c5a41309</_jobId>
+        <closingDate>2015-10-01</closingDate>
+        <salary>60000</salary>
+        <positionType>Counsellor</positionType>
+        <location>CBD, Inner &amp; Western Suburbs</location>
+        <description>I am currently Recruiting a Counsellor that specialises in Children Counselling</description>
+        <status>IN_REVIEW</status>
+        <assignedTeam>AIMS Project</assignedTeam>
+    </job>
+    <job>
+        <_jobId>4ad0d143-7965-425e-8f9b-1ec3c5a41308</_jobId>
+        <closingDate>2015-10-01</closingDate>
+        <salary>140000</salary>
+        <positionType>Project Manager</positionType>
+        <location>ACT</location>
+        <description>Multi Award Winning Company - Medium / High Rise Residential&#xD;
+Excellent Salaries and promotion within the Company - ASAP&#xD;
+Fastest Growing Mid-Tier Contractor in ACT</description>
+        <status>IN_REVIEW</status>
+        <assignedTeam>AIMS Project</assignedTeam>
+    </job>
+    <job>
         <_jobId>0646ce20-0e27-4839-ad26-b594e68a0f79</_jobId>
         <closingDate>2015-10-01</closingDate>
         <salary>100000</salary>
