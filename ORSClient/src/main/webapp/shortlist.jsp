@@ -33,18 +33,13 @@
           </tr>
         </c:forEach>
       </table>
-      <c:if test="${job.status eq 'PROCESSED'}">
+      <c:if test="${job.status eq 'IN_REVIEW'}">
         <div class="row">
           <button type="submit" class="btn btn-default">Send Invitations</button>
           <a href="<c:url value="/jobs" />"><button type="button" class="btn btn-default">Cancel</button></a>
         </div>
       </c:if>
     </form>
-    <div class="row">
-      <a href="<c:url value="/jobs/${application._jobId}/applications" />">
-        <button class="btn btn-default">Back to list</button>
-      </a>
-    </div>
   </div>
 <%@ include file="footer.html" %>
 </body>

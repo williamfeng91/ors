@@ -3,6 +3,7 @@ package au.edu.unsw.soacourse.ors.beans;
 import java.util.ArrayList;
 
 import au.edu.unsw.soacourse.ors.common.ApplicationStatus;
+import au.edu.unsw.soacourse.ors.dao.AutoCheckResultsDao;
 
 public class DetailedJob extends Job {
 
@@ -24,14 +25,19 @@ public class DetailedJob extends Job {
 		this.applications = applications;
 	}
 
-	public void setApplications(ArrayList<Application> applications) {
+	public void setApplications(String orsKey, String shortKey, ArrayList<Application> applications) {
 		this.applications = new ArrayList<DetailedApplication>();
 		for (Application a : applications) {
-			this.applications.add(new DetailedApplication(a));
+			DetailedApplication da = new DetailedApplication(a);
+			da.setAutoCheckResult(AutoCheckResultsDao.instance.getByApplication(orsKey, shortKey, da.get_appId()));
+			this.applications.add(da);
 		}
 	}
 
     public boolean allApplicationsAutoChecked() {
+    	if (applications.isEmpty()) {
+			return false;
+		}
     	for (DetailedApplication a : applications) {
     		if (a.getAutoCheckResult() == null) {
     			return false;

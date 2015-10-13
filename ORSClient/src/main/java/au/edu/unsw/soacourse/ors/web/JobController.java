@@ -103,7 +103,8 @@ public class JobController {
 				List<Job> jobs = JobsDao.instance.getAll(ORSKEY, user.getShortKey());
 				for (Job j : jobs) {
 					DetailedJob dj = new DetailedJob(j);
-					dj.setApplications((ArrayList<Application>) ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), dj.get_jobId()));
+					dj.setApplications(ORSKEY, user.getShortKey(),
+							(ArrayList<Application>) ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), dj.get_jobId()));
 					list.add(dj);
 				}
 				model.addAttribute("jobs", list);
@@ -112,7 +113,8 @@ public class JobController {
 				List<Job> jobs = JobsDao.instance.getAssignedJobs(ORSKEY, user.getShortKey(), user.getDepartment());
 				for (Job j : jobs) {
 					DetailedJob dj = new DetailedJob(j);
-					dj.setApplications((ArrayList<Application>) ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), dj.get_jobId()));
+					dj.setApplications(ORSKEY, user.getShortKey(),
+							(ArrayList<Application>) ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), dj.get_jobId()));
 					list.add(dj);
 				}
 				model.addAttribute("jobs", list);
@@ -131,10 +133,15 @@ public class JobController {
 	}
 	
 	@RequestMapping(value="/jobs/{id}")
-	public String visitJobPage(@PathVariable String id, ModelMap model) {
+	public String visitJobPage(@PathVariable String id, HttpServletRequest request, ModelMap model) {
+		User user = (User) request.getSession().getAttribute("user");
 		try {
-			Job j = new DetailedJob(JobsDao.instance.getById(id));
-			model.addAttribute("job", j);
+			DetailedJob dj = new DetailedJob(JobsDao.instance.getById(id));
+			if (user != null) {
+				dj.setApplications(ORSKEY, user.getShortKey(),
+						(ArrayList<Application>) ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), dj.get_jobId()));
+			}
+			model.addAttribute("job", dj);
 			model.addAttribute("today", TODAY);
 			return "jobDetails";
 		} catch (Exception e) {
@@ -228,12 +235,15 @@ public class JobController {
 			return "login";
 		}
 		try {
-			DetailedJob j = new DetailedJob(JobsDao.instance.getById(jobId));
-			if (!j.getStatus().equals(RecruitmentStatus.IN_REVIEW)
-					&& j.allApplicationsReviewed()) {
+			Job j = JobsDao.instance.getById(jobId);
+			List<Application> applications = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), jobId);
+			DetailedJob dj = new DetailedJob(j);
+			dj.setApplications(ORSKEY, user.getShortKey(),
+					(ArrayList<Application>) applications);
+			if (!dj.getStatus().equals(RecruitmentStatus.IN_REVIEW)
+					&& dj.allApplicationsReviewed()) {
 				return "redirect:/jobs";
 			}
-			List<Application> applications = ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), jobId);
 			for (Application a : applications) {
 				if (request.getParameter(a.get_appId()) != null) {
 					a.setStatus(ApplicationStatus.SHORTLISTED);
@@ -413,7 +423,8 @@ public class JobController {
 						assignedTeam);
 				for (Job j : jobs) {
 					DetailedJob dj = new DetailedJob(j);
-					dj.setApplications((ArrayList<Application>) ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), dj.get_jobId()));
+					dj.setApplications(ORSKEY, user.getShortKey(),
+							(ArrayList<Application>) ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), dj.get_jobId()));
 					list.add(dj);
 				}
 				model.addAttribute("jobs", list);
@@ -502,6 +513,8 @@ public class JobController {
 				assignedTeam = null;
 			} else {	// if hiring team is assigned and auto-check is done, proceed to next recruitment stage
 				DetailedJob j = new DetailedJob(JobsDao.instance.getById(jobId));
+				j.setApplications(ORSKEY, user.getShortKey(),
+						(ArrayList<Application>) ApplicationsDao.instance.getByJob(ORSKEY, user.getShortKey(), jobId));
 				if (j.allApplicationsAutoChecked()) {
 					updatedJob.setStatus(RecruitmentStatus.IN_REVIEW);
 					// update status for all applications of the job

@@ -56,7 +56,7 @@
           <c:if test="${job.status eq 'CREATED' && !job.hasReceivedApplication()}">
             <a href="<c:url value="/jobs/${job._jobId}/edit" />"><button class="btn btn-default">Edit</button></a>
           </c:if>
-          <c:if test="${job.status eq 'CREATED' && !job.hasReceivedApplication() || job.status eq 'FINALISED'}">
+          <c:if test="${job.status eq 'FINALISED'}">
             <a href="<c:url value="/jobs/${job._jobId}/delete" />"><button class="btn btn-default">Delete</button></a>
           </c:if>
         </c:when>

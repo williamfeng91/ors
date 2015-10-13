@@ -5,8 +5,8 @@
     <artifactId>PDVCheck</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
-    <name>Simple CXF Java-first SOAP project using Spring configuration</name>
-    <description>Simple CXF Java-first SOAP project using Spring configuration</description>
+    <name>Personal Detail Validation Service</name>
+    <description>Personal Detail Validation Service</description>
     <dependencies>
         <dependency>
             <groupId>org.apache.cxf</groupId>

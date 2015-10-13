@@ -34,6 +34,9 @@
                         <span>View applications</span>
                       </a>
                     </li>
+                    <c:if test="${job.status eq 'CREATED' && !job.hasReceivedApplication()}">
+                      <a href="<c:url value="/jobs/${job._jobId}/edit" />">Edit</a>
+                    </c:if>
                   </c:if>
                 </ul>
               </div>
